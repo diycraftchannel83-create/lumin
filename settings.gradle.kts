@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Lumina Lab"
+rootProject.name = "PhotoStudio"
 
 include(":app")
