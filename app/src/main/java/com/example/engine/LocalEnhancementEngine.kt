@@ -6,7 +6,9 @@ import kotlin.math.max
 object LocalEnhancementEngine {
  fun enhance(source: Bitmap, sharpen: Float=0.6f, denoise: Float=0.2f, localContrast: Float=0.25f): Bitmap {
   require(sharpen in 0f..1f && denoise in 0f..1f && localContrast in 0f..1f)
-  val w=source.width; val h=source.height; val p=IntArray(w*h); source.getPixels(p,0,w,0,0,w,h)
+  val w=source.width; val h=source.height
+  require(w.toLong()*h<=16_000_000L) { "Local enhancement is limited to 16 megapixels to protect device memory." }
+  val p=IntArray(w*h); source.getPixels(p,0,w,0,0,w,h)
   val blur=boxBlur(p,w,h); val out=IntArray(p.size); val sharp=sharpen*1.35f; val contrast=localContrast*0.45f
   for(i in p.indices) {
    val c=p[i]; val b=blur[i]; val a=c ushr 24 and 255
@@ -14,7 +16,7 @@ object LocalEnhancementEngine {
    val br=b ushr 16 and 255; val bg=b ushr 8 and 255; val bb=b and 255
    val edge=max(abs(r-br),max(abs(g-bg),abs(blue-bb)))
    val smooth=(denoise*(1f-edge/72f).coerceIn(0f,1f)).coerceAtMost(0.35f)
-   fun ch(v:Int,bv:Int):Int { var n=v+(v-bv)*sharp; n=n*(1f+contrast); n=n*(1f-smooth)+bv*smooth; return n.toInt().coerceIn(0,255) }
+   fun ch(v:Int,bv:Int):Int { var n=v+(v-bv)*sharp; n=(n-128f)*(1f+contrast)+128f; n=n*(1f-smooth)+bv*smooth; return n.toInt().coerceIn(0,255) }
    out[i]=(a shl 24) or (ch(r,br) shl 16) or (ch(g,bg) shl 8) or ch(blue,bb)
   }
   return Bitmap.createBitmap(out,w,h,Bitmap.Config.ARGB_8888)
