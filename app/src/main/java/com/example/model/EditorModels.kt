@@ -212,7 +212,8 @@ enum class BackgroundReplacement(val label: String) {
 
 enum class AiToolMode(val label: String) {
     OBJECT_ERASER("Object Eraser"),
-    BACKGROUND_REMOVER("BG Remover")
+    BACKGROUND_REMOVER("BG Remover"),
+    ENHANCE("AI Enhance")
 }
 
 @Immutable
@@ -222,6 +223,7 @@ data class AiStudioState(
     val eraserStrokes: List<BrushStroke> = emptyList(),
     val hasObjectRemovalApplied: Boolean = false,
     val hasBackgroundRemoved: Boolean = false,
+    val hasEnhancementApplied: Boolean = false,
     val backgroundStyle: BackgroundReplacement = BackgroundReplacement.TRANSPARENT,
     val noticeBanner: String? = null
 )
