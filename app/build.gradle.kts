@@ -20,6 +20,12 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
+    externalNativeBuild {
+      cmake {
+        cppFlags += "-O3"
+      }
+    }
   }
 
   // Do not remove or modify these signingConfigs. They are necessary for building, installing,
@@ -55,6 +61,12 @@ android {
   buildFeatures {
     compose = true
     buildConfig = true
+  }
+  externalNativeBuild {
+    cmake {
+      path = file("src/main/jni/CMakeLists.txt")
+      version = "3.22.1"
+    }
   }
   testOptions { unitTests { isIncludeAndroidResources = true } }
   dependenciesInfo {
