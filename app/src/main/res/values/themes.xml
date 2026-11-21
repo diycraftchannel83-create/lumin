@@ -9,10 +9,10 @@
         <item name="android:windowBackground">#101114</item>
     </style>
 
-    <style name="Theme.PhotoStudio.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#101114</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/photostudio_splash</item>
-        <item name="windowSplashScreenIconBackgroundColor">#101114</item>
-        <item name="postSplashScreenTheme">@style/Theme.PhotoStudio</item>
+    <style name="Theme.PhotoStudio.Starting" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/photostudio_splash_screen</item>
+        <item name="android:statusBarColor">#101114</item>
+        <item name="android:navigationBarColor">#101114</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>
