@@ -46,7 +46,7 @@
 - [x] Rename legacy application and typography code symbols to PhotoStudio; legacy billing SKU intentionally retained for product compatibility
 - [x] Remove remaining user-visible Lumin branding from premium/export messaging (legacy SKU kept intentionally; broader strings audit remains)
 - [ ] Update export metadata, default filenames and share text where applicable
-- [ ] Decide final package/application ID before Play Store release (changing it later creates a separate app identity)
+- [x] Set final Android application ID to `com.winsmediatama.photostudio` (new Play Store app identity; do not expect upgrades from the previous AI Studio ID)
 
 ### Design system
 - [ ] Dark studio theme as primary
@@ -60,7 +60,7 @@
 
 ## Phase 1 — Android Configuration & Release Blockers
 
-- [ ] Confirm final namespace and application ID
+- [x] Confirm application ID `com.winsmediatama.photostudio`; Kotlin/Android namespace remains `com.example` for this source/R-resource package pending optional source-package migration
 - [ ] Review minSdk, targetSdk and compileSdk
 - [ ] Audit AndroidManifest permissions and remove unnecessary permissions
 - [ ] Validate exported activities/services/receivers and intent filters
@@ -414,6 +414,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
+| 2026-11-21 | Phase 1 — package/application ID | Changed Android `applicationId` from the legacy AI Studio ID to `com.winsmediatama.photostudio`. Kept `namespace = com.example` so generated `R`/source package references remain stable; FileProvider authority uses `${applicationId}` and therefore follows the new app ID. Firebase `google-services.json` is absent from the repository and must be registered/configured for the new package before AI/release verification. This is a new Play Store identity, not an in-place upgrade from the old package. | Source inspection only; build/install/Firebase configuration not verified | `594d6ca` |
 | 2026-11-21 | Phase 3 — startup workspace behavior | Removed automatic loading of the sample landscape on ViewModel initialization so the app opens in the branded empty workspace and users can select/import their own image. Sample assets remain available through the sample picker. | Source-level change only; build and tests deferred by user instruction | `7d4ddc5` |
 | 2026-11-21 | Phase 5 — AI cloud-processing disclosure | Added a visible AI Studio notice explaining that selected photos are sent to Firebase/Gemini cloud services and cautioning against sensitive uploads without agreement. This is a disclosure only; explicit consent gating, privacy policy details and provider data-retention review remain release blockers. | Source-only; UI build and privacy review pending | `af64591` |
 | 2026-11-21 | Phase 2 — source import race protection | Added source-load cancellation and generation tracking for gallery/sample image loads; a slower earlier import is prevented from replacing a later user selection. Cancellation is rethrown rather than surfaced as a false import error. | Source-only; concurrent import behavior needs tests | `8ce01dd` |
