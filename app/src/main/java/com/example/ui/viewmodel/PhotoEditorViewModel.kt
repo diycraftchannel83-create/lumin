@@ -815,6 +815,49 @@ class PhotoEditorViewModel(
         }
     }
 
+    fun runAiEnhance() {
+        val base = workingBaseFullRes ?: return
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(aiOperationState = AiOperationUiState.Loading("Enhancing sharpness, clarity, and photo quality with AI..."))
+            }
+            try {
+                val result = aiRepository.enhancePhoto(base)
+                workingBaseFullRes = result.bitmap
+                workingBasePreview = ImageProcessor.downsampleIfNeeded(result.bitmap, 1024)
+                _uiState.update {
+                    it.copy(
+                        aiState = it.aiState.copy(
+                            hasEnhancementApplied = true,
+                            noticeBanner = result.notice
+                        ),
+                        aiOperationState = AiOperationUiState.Success(result.notice),
+                        canRevertAiBase = true
+                    )
+                }
+                refreshFilterThumbnails()
+                schedulePreviewRender(immediate = true)
+            } catch (e: TimeoutCancellationException) {
+                Log.e(TAG, "AI Enhance timed out", e)
+                _uiState.update {
+                    it.copy(aiOperationState = AiOperationUiState.Error("AI Enhance timed out after 90 seconds. Please try again."))
+                }
+            } catch (e: QuotaExceededException) {
+                Log.e(TAG, "AI Enhance quota exceeded", e)
+                _uiState.update {
+                    it.copy(aiOperationState = AiOperationUiState.Error("AI quota exceeded. Please check Firebase billing or retry later."))
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "AI Enhance failed", e)
+                _uiState.update {
+                    it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "AI photo enhancement failed."))
+                }
+            }
+        }
+    }
+
     fun runOneClickBackgroundRemoval() {
         val base = workingBaseFullRes ?: return
         viewModelScope.launch {
