@@ -117,6 +117,7 @@ class PhotoEditorViewModel(
     private var renderJob: Job? = null
     private var previewRenderGeneration = 0L
     private var thumbsJob: Job? = null
+    private var thumbnailGeneration = 0L
 
     // Start in the branded empty workspace. Sample images remain available from the sample picker.
     // Users should choose their own image instead of having a sample auto-loaded on launch.
@@ -250,10 +251,14 @@ class PhotoEditorViewModel(
 
     private fun refreshFilterThumbnails() {
         val base = workingBasePreview ?: return
+        val generation = ++thumbnailGeneration
         thumbsJob?.cancel()
         thumbsJob = viewModelScope.launch(Dispatchers.Default) {
             val thumbs = ImageProcessor.renderFilterThumbnails(base)
-            _uiState.update { it.copy(filterThumbnails = thumbs) }
+            // Thumbnail rendering can be synchronous and finish after cancellation; ignore stale work.
+            if (generation == thumbnailGeneration) {
+                _uiState.update { it.copy(filterThumbnails = thumbs) }
+            }
         }
     }
 
