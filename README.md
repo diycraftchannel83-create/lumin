@@ -68,7 +68,7 @@
 - [ ] Review backup/data-extraction rules; exclude sensitive temporary/editor data as appropriate
 - [ ] Separate Debug and Release configurations
 - [ ] Verify Firebase configuration for production
-- [ ] Ensure debug App Check tokens/debug providers cannot be enabled in Release
+- [x] Restrict Firebase App Check debug provider dependency to Debug builds (source config; release packaging still requires verification)
 - [ ] Verify production App Check provider and key configuration
 - [ ] Remove secrets from source code and repository history where applicable
 - [ ] Review logging so sensitive image/user data is not logged
@@ -414,6 +414,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
+| 2026-11-21 | Phase 1 — App Check debug dependency isolation | Moved Firebase App Check Debug provider dependency from shared `implementation` to `debugImplementation`, preventing the debug provider library from being included in Release dependency configuration. Firebase reCAPTCHA provider remains the production dependency. | Source config only; Release dependency graph/build not checked (build deferred) | `ee4caef` |
 | 2026-11-21 | Phase 1 — package/application ID | Changed Android `applicationId` from the legacy AI Studio ID to `com.winsmediatama.photostudio`. Kept `namespace = com.example` so generated `R`/source package references remain stable; FileProvider authority uses `${applicationId}` and therefore follows the new app ID. Firebase `google-services.json` is absent from the repository and must be registered/configured for the new package before AI/release verification. This is a new Play Store identity, not an in-place upgrade from the old package. | Source inspection only; build/install/Firebase configuration not verified | `594d6ca` |
 | 2026-11-21 | Phase 3 — startup workspace behavior | Removed automatic loading of the sample landscape on ViewModel initialization so the app opens in the branded empty workspace and users can select/import their own image. Sample assets remain available through the sample picker. | Source-level change only; build and tests deferred by user instruction | `7d4ddc5` |
 | 2026-11-21 | Phase 5 — AI cloud-processing disclosure | Added a visible AI Studio notice explaining that selected photos are sent to Firebase/Gemini cloud services and cautioning against sensitive uploads without agreement. This is a disclosure only; explicit consent gating, privacy policy details and provider data-retention review remain release blockers. | Source-only; UI build and privacy review pending | `af64591` |
@@ -430,9 +431,9 @@ A task can be marked complete only when:
 
 ## Current Known Release Risks (Initial Audit)
 
-- [ ] Final brand/package identity not confirmed (applicationId intentionally unchanged pending Play Store identity decision)
+- [x] Application ID set to `com.winsmediatama.photostudio`; source/namespace migration from `com.example` remains pending
 - [ ] Release configuration and signing need verification
-- [ ] Production Firebase/App Check configuration needs verification
+- [ ] Verify `GOOGLE_SERVICES_JSON_BASE64` secret encodes Firebase config for `com.winsmediatama.photostudio`; verify production App Check reCAPTCHA and release dependency graph
 - [ ] AdMob production identifiers need verification
 - [ ] Billing purchase/restore/revocation paths need end-to-end tests
 - [ ] AI object/background removal quality and failure handling need validation
