@@ -77,8 +77,6 @@ jobs:
           print("Firebase secret prepared for PhotoStudio package.")
           PY
       - name: Build Debug APK with Firebase Secret
-        env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
         run: gradle --no-daemon assembleDebug
 
       - name: Upload Debug APK
