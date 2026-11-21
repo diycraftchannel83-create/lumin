@@ -57,6 +57,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.painterResource
+import com.example.R
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -288,6 +290,37 @@ fun CanvasStage(
 
             // Unused variable suppression / clarity
             imageBounds.width
+        } else {
+            // Branded empty workspace shown before a photo is opened.
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.photostudio_icon),
+                    contentDescription = "PhotoStudio",
+                    modifier = Modifier.size(112.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Text(
+                    text = "PhotoStudio",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Your photos, your studio.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+                Text(
+                    text = "Open a photo to start creating",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = CyanPrecision
+                )
+            }
         }
 
         // Top-Left: Metadata Badge
