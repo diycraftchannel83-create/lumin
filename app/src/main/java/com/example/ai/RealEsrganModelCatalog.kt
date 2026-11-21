@@ -3,8 +3,8 @@ package com.example.ai
 /**
  * Initial Real-ESRGAN model catalog for PhotoStudio.
  *
- * Model weights are intentionally not bundled in the APK. Download/install and native
- * inference are separate roadmap milestones; these entries are metadata only.
+ * Model weights are downloaded on demand and stored app-private. Native inference source
+ * is integrated; build and real-device validation remain pending.
  */
 enum class RealEsrganModelType {
     PHOTO, ANIME, FAST
