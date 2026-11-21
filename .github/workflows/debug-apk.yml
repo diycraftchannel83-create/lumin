@@ -42,6 +42,7 @@ jobs:
             https://github.com/Tencent/ncnn/releases/download/20260526/ncnn-20260526-android-vulkan.zip
           unzip -q /tmp/ncnn-android-vulkan.zip -d app/src/main/jni
           test -f app/src/main/jni/ncnn-20260526-android-vulkan/arm64-v8a/lib/cmake/ncnn/ncnnConfig.cmake
+          test -f app/src/main/jni/ncnn-20260526-android-vulkan/x86_64/lib/cmake/ncnn/ncnnConfig.cmake
 
       - name: Use only Firebase configuration from GitHub Secret
         env:
@@ -77,7 +78,7 @@ jobs:
           print("Firebase secret prepared for PhotoStudio package.")
           PY
       - name: Build Debug APK with Firebase Secret
-        run: gradle --no-daemon assembleDebug
+        run: gradle --no-daemon testDebugUnitTest assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
