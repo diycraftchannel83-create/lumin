@@ -468,3 +468,17 @@ The repository owner reports that these GitHub Actions secrets are already confi
 
 **Important:** The workflow has been added but intentionally has not been run. Build, test, Firebase package matching, signing validation and AAB inspection remain deferred.
 
+
+
+## Manual Debug APK Workflow
+
+Workflow file: `.github/workflows/debug-apk.yml`
+
+- Triggered manually from GitHub Actions (`workflow_dispatch`).
+- Sets up Java 17 and Android SDK.
+- Optionally decodes `GOOGLE_SERVICES_JSON_BASE64` if configured.
+- Runs `./gradlew --no-daemon assembleDebug`.
+- Uploads the Debug APK artifact for 14 days.
+- Does not run automatically on pushes and has not been executed yet.
+
+To use: open the repository's **Actions** tab, select **PhotoStudio Android Debug APK**, choose **Run workflow**, and download the artifact from the completed run.
