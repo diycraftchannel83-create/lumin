@@ -34,20 +34,40 @@ jobs:
         run: |
           sdkmanager "platforms;android-36.1" "build-tools;36.0.0"
 
-      - name: Decode Firebase configuration from GitHub Secret
+      - name: Use only Firebase configuration from GitHub Secret
         env:
           GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
         run: |
+          set -e
           if [ -z "$GOOGLE_SERVICES_JSON_BASE64" ]; then
             echo "ERROR: GitHub Secret GOOGLE_SERVICES_JSON_BASE64 is empty or unavailable."
             exit 1
           fi
-          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > app/google-services.json
-          test -s app/google-services.json
-          echo "Firebase config decoded successfully."
 
-      - name: Build Debug APK
-        run: gradle --no-daemon assembleDebug -x processDebugGoogleServices
+          # Remove any Firebase JSON configuration checked into or generated in the workspace.
+          find app -name "google-services.json" -type f -delete
+
+          # Decode the single source of truth: GitHub Secret.
+          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > app/google-services.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(Path("app/google-services.json").read_text())
+          expected = "com.winsmediatama.photostudio"
+          clients = config.get("client", [])
+          packages = [
+              client.get("client_info", {}).get("android_client_info", {}).get("package_name")
+              for client in clients
+          ]
+          print("Firebase client package names:", packages)
+          if expected not in packages:
+              raise SystemExit(f"ERROR: Secret Firebase JSON does not contain client package {expected}")
+          print("Firebase secret validated for", expected)
+          PY
+
+      - name: Build Debug APK with Firebase Secret
+        run: gradle --no-daemon assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
