@@ -156,4 +156,39 @@ class ExampleRobolectricTest {
     assertEquals(160, Color.red(brighter.getPixel(10, 10)))
     assertEquals(40, Color.red(darker.getPixel(10, 10)))
   }
+
+  @Test
+  fun `custom tone curve control points remap image luminance`() {
+    val base = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888)
+    base.eraseColor(Color.rgb(128, 128, 128))
+
+    val liftedMidtones = com.example.model.ToneCurvesState(
+      rgbPoints = listOf(
+        com.example.model.CurvePoint(0f, 0f),
+        com.example.model.CurvePoint(0.5f, 0.78f),
+        com.example.model.CurvePoint(1f, 1f)
+      )
+    )
+    val crushedMidtones = com.example.model.ToneCurvesState(
+      rgbPoints = listOf(
+        com.example.model.CurvePoint(0f, 0f),
+        com.example.model.CurvePoint(0.5f, 0.22f),
+        com.example.model.CurvePoint(1f, 1f)
+      )
+    )
+
+    val liftedOut = ImageProcessor.renderProcessedBitmap(
+      baseSource = base,
+      state = EditorStateSnapshot(curves = liftedMidtones)
+    )
+    val crushedOut = ImageProcessor.renderProcessedBitmap(
+      baseSource = base,
+      state = EditorStateSnapshot(curves = crushedMidtones)
+    )
+
+    val liftedLuma = Color.red(liftedOut.getPixel(10, 10))
+    val crushedLuma = Color.red(crushedOut.getPixel(10, 10))
+    assertTrue("Expected lifted midtone > 185, was $liftedLuma", liftedLuma > 185)
+    assertTrue("Expected crushed midtone < 75, was $crushedLuma", crushedLuma < 75)
+  }
 }

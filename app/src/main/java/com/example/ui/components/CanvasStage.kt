@@ -4,10 +4,13 @@ import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -23,8 +26,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ShowChart
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Compare
 import androidx.compose.material.icons.rounded.Exposure
@@ -60,13 +65,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.widthIn
 import com.example.engine.ExposureColorMatrix
 import com.example.model.AiToolMode
 import com.example.model.BackgroundReplacement
 import com.example.model.BrushPoint
 import com.example.model.BrushStroke
+import com.example.model.CurveChannel
+import com.example.model.CurvePoint
 import com.example.model.EditorToolTab
 import com.example.model.HistogramData
 import com.example.model.ImageMetadataInfo
@@ -113,6 +118,10 @@ fun CanvasStage(
     onExposureChange: (Float) -> Unit,
     onExposureChangeFinished: () -> Unit,
     onResetExposure: () -> Unit,
+    onSelectCurveChannel: (CurveChannel) -> Unit,
+    onUpdateCurvePoints: (List<CurvePoint>, Boolean) -> Unit,
+    onApplyCurvePreset: (List<CurvePoint>) -> Unit,
+    onResetCurveChannel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val activeBitmap = if (uiState.isComparing) {
@@ -123,9 +132,11 @@ fun CanvasStage(
 
     var zoomScale by remember { mutableFloatStateOf(1f) }
     var panOffset by remember { mutableStateOf(Offset.Zero) }
+    var showToneCurveOverlay by remember { mutableStateOf(false) }
 
-    // Reset zoom when switching to Crop, Masking, Blend dragging, or AI Eraser so coordinates stay accurate
-    val allowZoomPan = uiState.activeTab != EditorToolTab.CROP &&
+    // Reset zoom when switching to Crop, Masking, Blend dragging, AI Eraser, or Editor Tone Curve overlay
+    val allowZoomPan = !showToneCurveOverlay &&
+        uiState.activeTab != EditorToolTab.CROP &&
         !(uiState.activeTab == EditorToolTab.MASKING && uiState.snapshot.selectedMaskId != null) &&
         !(uiState.activeTab == EditorToolTab.BLEND && uiState.snapshot.selectedBlendLayerId != null) &&
         !(uiState.activeTab == EditorToolTab.AI_STUDIO && uiState.aiState.activeMode == AiToolMode.OBJECT_ERASER)
@@ -300,105 +311,167 @@ fun CanvasStage(
             HistogramOverlayCard(histogram = uiState.histogram)
         }
 
-        // Bottom HUD Row: Hold-to-Compare + Inline Quick Exposure ColorMatrix Slider
-        Row(
+        // Floating Editor Tone Curve Graph Overlay + Bottom HUD Row
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .padding(horizontal = 6.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(
-                        if (uiState.isComparing) AmberWarm else StudioPanel.copy(alpha = 0.86f)
-                    )
-                    .border(
-                        1.dp,
-                        if (uiState.isComparing) AmberWarm else StudioHairline,
-                        RoundedCornerShape(10.dp)
-                    )
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onPress = {
-                                onCompareChange(true)
-                                tryAwaitRelease()
-                                onCompareChange(false)
-                            }
-                        )
-                    }
-                    .padding(horizontal = 10.dp, vertical = 9.dp)
-                    .testTag("compare_before_after_button")
+            AnimatedVisibility(
+                visible = showToneCurveOverlay,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { it / 3 }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 3 })
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Compare,
-                        contentDescription = "Hold to compare original",
-                        tint = if (uiState.isComparing) ObsidianVoid else TextPrimary,
-                        modifier = Modifier.size(15.dp)
-                    )
-                    Text(
-                        text = if (uiState.isComparing) "ORIGINAL" else "Compare",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (uiState.isComparing) ObsidianVoid else TextPrimary
-                    )
-                }
+                EditorToneCurvePanel(
+                    curvesState = uiState.snapshot.curves,
+                    histogram = uiState.histogram,
+                    onSelectChannel = onSelectCurveChannel,
+                    onUpdatePoints = onUpdateCurvePoints,
+                    onApplyPreset = onApplyCurvePreset,
+                    onResetChannel = onResetCurveChannel,
+                    onBeginDrag = onBeginContinuousEdit,
+                    onEndDrag = onEndContinuousEdit,
+                    onClose = { showToneCurveOverlay = false }
+                )
             }
 
-            Spacer(modifier = Modifier.weight(1f, fill = false))
-
-            val curExposure = uiState.snapshot.adjustments.exposure
-            val isExposureEdited = kotlin.math.abs(curExposure) > 0.01f
+            val isCurveModified = !uiState.snapshot.curves.isLinear
             Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .widthIn(max = 270.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(StudioPanel.copy(alpha = 0.88f))
-                    .border(
-                        1.dp,
-                        if (isExposureEdited) CyanPrecision.copy(alpha = 0.6f) else StudioHairline,
-                        RoundedCornerShape(12.dp)
-                    )
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
-                    .testTag("editor_exposure_control"),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.Exposure,
-                    contentDescription = "Reset exposure",
-                    tint = if (isExposureEdited) CyanPrecision else TextSecondary,
+                Box(
                     modifier = Modifier
-                        .size(18.dp)
-                        .clickable(onClick = onResetExposure)
-                )
-                Slider(
-                    value = curExposure,
-                    onValueChange = onExposureChange,
-                    onValueChangeFinished = onExposureChangeFinished,
-                    valueRange = -2.0f..2.0f,
-                    colors = SliderDefaults.colors(
-                        thumbColor = TextPrimary,
-                        activeTrackColor = CyanPrecision,
-                        inactiveTrackColor = StudioHairline
-                    ),
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            if (uiState.isComparing) AmberWarm else StudioPanel.copy(alpha = 0.86f)
+                        )
+                        .border(
+                            1.dp,
+                            if (uiState.isComparing) AmberWarm else StudioHairline,
+                            RoundedCornerShape(10.dp)
+                        )
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onPress = {
+                                    onCompareChange(true)
+                                    tryAwaitRelease()
+                                    onCompareChange(false)
+                                }
+                            )
+                        }
+                        .padding(horizontal = 9.dp, vertical = 9.dp)
+                        .testTag("compare_before_after_button")
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Compare,
+                            contentDescription = "Hold to compare original",
+                            tint = if (uiState.isComparing) ObsidianVoid else TextPrimary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = if (uiState.isComparing) "ORIG" else "Compare",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (uiState.isComparing) ObsidianVoid else TextPrimary
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(
+                            when {
+                                showToneCurveOverlay -> CyanPrecision.copy(alpha = 0.22f)
+                                isCurveModified -> CyanPrecision.copy(alpha = 0.14f)
+                                else -> StudioPanel.copy(alpha = 0.86f)
+                            }
+                        )
+                        .border(
+                            1.dp,
+                            if (showToneCurveOverlay || isCurveModified) CyanPrecision else StudioHairline,
+                            RoundedCornerShape(10.dp)
+                        )
+                        .clickable { showToneCurveOverlay = !showToneCurveOverlay }
+                        .padding(horizontal = 9.dp, vertical = 9.dp)
+                        .testTag("toggle_editor_tone_curve_button")
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ShowChart,
+                            contentDescription = "Toggle custom tone curve graph",
+                            tint = if (showToneCurveOverlay || isCurveModified) CyanPrecision else TextPrimary,
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Text(
+                            text = "Curve",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = if (showToneCurveOverlay || isCurveModified) CyanPrecision else TextPrimary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f, fill = false))
+
+                val curExposure = uiState.snapshot.adjustments.exposure
+                val isExposureEdited = kotlin.math.abs(curExposure) > 0.01f
+                Row(
                     modifier = Modifier
                         .weight(1f)
-                        .height(30.dp)
-                        .testTag("editor_exposure_slider")
-                )
-                Text(
-                    text = String.format("%+.2f", curExposure),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isExposureEdited) CyanPrecision else TextSecondary,
-                    modifier = Modifier.clickable(onClick = onResetExposure)
-                )
+                        .widthIn(max = 240.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(StudioPanel.copy(alpha = 0.88f))
+                        .border(
+                            1.dp,
+                            if (isExposureEdited) CyanPrecision.copy(alpha = 0.6f) else StudioHairline,
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .testTag("editor_exposure_control"),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Exposure,
+                        contentDescription = "Reset exposure",
+                        tint = if (isExposureEdited) CyanPrecision else TextSecondary,
+                        modifier = Modifier
+                            .size(17.dp)
+                            .clickable(onClick = onResetExposure)
+                    )
+                    Slider(
+                        value = curExposure,
+                        onValueChange = onExposureChange,
+                        onValueChangeFinished = onExposureChangeFinished,
+                        valueRange = -2.0f..2.0f,
+                        colors = SliderDefaults.colors(
+                            thumbColor = TextPrimary,
+                            activeTrackColor = CyanPrecision,
+                            inactiveTrackColor = StudioHairline
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(30.dp)
+                            .testTag("editor_exposure_slider")
+                    )
+                    Text(
+                        text = String.format("%+.2f", curExposure),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isExposureEdited) CyanPrecision else TextSecondary,
+                        modifier = Modifier.clickable(onClick = onResetExposure)
+                    )
+                }
             }
         }
 

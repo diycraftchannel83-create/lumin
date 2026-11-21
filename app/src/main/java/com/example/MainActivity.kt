@@ -194,6 +194,10 @@ fun LuminaStudioScreen(
                         onResetExposure = {
                             viewModel.updateAdjustments(continuous = false) { it.copy(exposure = 0f) }
                         },
+                        onSelectCurveChannel = viewModel::selectCurveChannel,
+                        onUpdateCurvePoints = viewModel::updateActiveCurvePoints,
+                        onApplyCurvePreset = viewModel::applyCurvePreset,
+                        onResetCurveChannel = viewModel::resetActiveCurveChannel,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
@@ -231,6 +235,10 @@ fun LuminaStudioScreen(
                         onResetExposure = {
                             viewModel.updateAdjustments(continuous = false) { it.copy(exposure = 0f) }
                         },
+                        onSelectCurveChannel = viewModel::selectCurveChannel,
+                        onUpdateCurvePoints = viewModel::updateActiveCurvePoints,
+                        onApplyCurvePreset = viewModel::applyCurvePreset,
+                        onResetCurveChannel = viewModel::resetActiveCurveChannel,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
