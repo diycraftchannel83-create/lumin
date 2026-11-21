@@ -29,13 +29,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "PremiumBillingManager"
-private const val PREFS_NAME = "lumina_premium_billing_prefs"
+// Keep the legacy preference namespace to preserve previously stored premium entitlement.\nprivate const val PREFS_NAME = "lumina_premium_billing_prefs"
 private const val KEY_IS_PREMIUM_AD_FREE = "is_premium_ad_free"
 
 data class PremiumBillingState(
     val isPremiumAdFree: Boolean = false,
     val formattedPrice: String? = null,
-    val productTitle: String = "Lumina Pro — Remove Ads",
+    val productTitle: String = "PhotoStudio Pro — Remove Ads",
     val isStoreReady: Boolean = false,
     val isPurchasing: Boolean = false,
     val statusMessage: String? = null,
@@ -185,7 +185,7 @@ class PremiumBillingManager(
                 _state.update {
                     it.copy(
                         statusMessage = if (foundOwned) {
-                            "Lumina Pro Ad-Free purchase restored."
+                            "PhotoStudio Pro Ad-Free purchase restored."
                         } else {
                             "No previous Remove Ads purchase found for this Google Play account."
                         },
@@ -204,7 +204,7 @@ class PremiumBillingManager(
 
     fun launchRemoveAdsPurchase(activity: Activity) {
         if (_state.value.isPremiumAdFree) {
-            _state.update { it.copy(statusMessage = "Ads are already removed with Lumina Pro.") }
+            _state.update { it.copy(statusMessage = "Ads are already removed with PhotoStudio Pro.") }
             return
         }
 
@@ -360,7 +360,7 @@ class PremiumBillingManager(
                 _state.update {
                     it.copy(
                         isPurchasing = false,
-                        statusMessage = "Lumina Pro is already owned — ads removed!",
+                        statusMessage = "PhotoStudio Pro is already owned — ads removed!",
                         errorMessage = null
                     )
                 }
