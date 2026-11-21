@@ -36,9 +36,9 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
 
     ncnn::Mat source(width, height, 3, (size_t)1u);
     for (int y = 0; y < height; ++y) {
-        unsigned char* rowR = source.channel(0) + y * source.w;
-        unsigned char* rowG = source.channel(1) + y * source.w;
-        unsigned char* rowB = source.channel(2) + y * source.w;
+        unsigned char* rowR = source.channel(0).row<unsigned char>(y);
+        unsigned char* rowG = source.channel(1).row<unsigned char>(y);
+        unsigned char* rowB = source.channel(2).row<unsigned char>(y);
         for (int x = 0; x < width; ++x) {
             const uint32_t pixel = static_cast<uint32_t>(argb[y * width + x]);
             rowR[x] = (pixel >> 16) & 0xff;
@@ -126,8 +126,8 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
                     const int srcX = srcOffsetX + ox;
                     const int dstX = outX + ox;
                     for (int c = 0; c < 3; ++c) {
-                        output.channel(c)[dstY * output.w + dstX] =
-                            tileOutput.channel(c)[srcY * tileOutput.w + srcX];
+                        output.channel(c).row<float>(dstY)[dstX] =
+                            tileOutput.channel(c).row<float>(srcY)[srcX];
                     }
                 }
             }
