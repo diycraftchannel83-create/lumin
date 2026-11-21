@@ -531,15 +531,9 @@ fun AiStudioPanel(
 
             AiToolMode.BACKGROUND_REMOVER -> {
                 if (aiState.hasBackgroundRemoved) {
-                    Text(
-                        text = "BACKDROP",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextMuted
-                    )
+                    Text("BACKDROP", style = MaterialTheme.typography.labelSmall, color = TextMuted)
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
+                        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         BackgroundReplacement.entries.forEach { bg ->
@@ -548,107 +542,60 @@ fun AiStudioPanel(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
                                     .background(if (sel) CyanPrecision.copy(alpha = 0.18f) else StudioPanel)
-                                    .border(
-                                        1.dp,
-                                        if (sel) CyanPrecision else StudioHairline,
-                                        RoundedCornerShape(8.dp)
-                                    )
+                                    .border(1.dp, if (sel) CyanPrecision else StudioHairline, RoundedCornerShape(8.dp))
                                     .clickable { onSelectBackgroundStyle(bg) }
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
-                                Text(
-                                    text = bg.label,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = if (sel) CyanPrecision else TextSecondary
-                                )
+                                Text(bg.label, style = MaterialTheme.typography.labelMedium, color = if (sel) CyanPrecision else TextSecondary)
                             }
                         }
                     }
                 }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (canRevertAiBase) {
-                        OutlinedButton(
-                            onClick = onRevertAi,
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier.weight(0.8f)
-                        ) {
+                        OutlinedButton(onClick = onRevertAi, shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(0.8f)) {
                             Text("Revert AI", style = MaterialTheme.typography.labelMedium)
                         }
                     }
                     Button(
                         onClick = onRunBackgroundRemoval,
                         enabled = aiOperationState !is AiOperationUiState.Loading,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CyanPrecision,
-                            contentColor = ObsidianVoid
-                        ),
+                        colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid),
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .weight(1.5f)
-                            .testTag("run_ai_bg_remove_button")
+                        modifier = Modifier.weight(1.5f).testTag("run_ai_bg_remove_button")
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.AutoAwesome,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "1-Click Remove BG",
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                        )
+                        Icon(Icons.Rounded.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text("1-Click Remove BG", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
                     }
                 }
-                AiToolMode.ENHANCE -> {
+            }
+
+            AiToolMode.ENHANCE -> {
                 Text(
                     text = "AI Enhance cleans up blurry or noisy photos, improves edge sharpness and restores natural-looking detail. Results depend on the source image; AI may reconstruct details.",
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     if (canRevertAiBase) {
-                        OutlinedButton(
-                            onClick = onRevertAi,
-                            shape = RoundedCornerShape(10.dp),
-                            modifier = Modifier.weight(0.8f)
-                        ) {
+                        OutlinedButton(onClick = onRevertAi, shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(0.8f)) {
                             Text("Revert AI", style = MaterialTheme.typography.labelMedium)
                         }
                     }
                     Button(
                         onClick = onRunAiEnhance,
                         enabled = aiOperationState !is AiOperationUiState.Loading,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = CyanPrecision,
-                            contentColor = ObsidianVoid
-                        ),
+                        colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid),
                         shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .weight(1.5f)
-                            .testTag("run_ai_enhance_button")
+                        modifier = Modifier.weight(1.5f).testTag("run_ai_enhance_button")
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.AutoAwesome,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "Enhance Photo (AI)",
-                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
-                        )
+                        Icon(Icons.Rounded.AutoAwesome, contentDescription = null, modifier = Modifier.size(16.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text("Enhance Photo (AI)", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
                     }
                 }
             }
-        }
         }
     }
 }
