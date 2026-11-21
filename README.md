@@ -512,3 +512,15 @@ The workflows are updated, but the corrected run has not yet been started/verifi
 ### Follow-up SDK platform correction
 
 Gradle's compile SDK is configured as Android API 36 with minor API level 1 (`compileSdk release(36) { minorApiLevel = 1 }`). The manual workflows now request `platforms;android-36.1` instead of `android-36`, matching that compile SDK configuration. This correction is committed to both Debug APK and signed Release workflows. It is still awaiting a fresh manual run; the Actions integration available here can inspect runs/logs but cannot dispatch workflow runs.
+
+
+## Local Enhancement Engine (Free / Offline)
+
+- [x] Add CPU-based local processing: noise smoothing, unsharp mask, and contrast recovery
+- [x] Add **Local Enhance** action in AI Studio (no network/API/billing)
+- [x] Add **Upscale 2×** action using high-quality bitmap interpolation
+- [ ] Add adjustable sharpen/denoise/contrast sliders and compare preview
+- [ ] Benchmark memory/performance across low/mid/high-end Android devices
+- [ ] Evaluate licensed on-device neural restoration model; retain classical fallback
+
+**Accuracy note:** The current Local Enhance is classical image processing, not a neural AI model. It improves perceived clarity but cannot reliably reconstruct missing detail. Upscale 2× is interpolation, not AI super-resolution.
