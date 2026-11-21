@@ -108,6 +108,8 @@ class PhotoEditorViewModel(
     private var originalLoadedBitmap: Bitmap? = null
     private var workingBaseFullRes: Bitmap? = null
     private var workingBasePreview: Bitmap? = null
+    private var sourceLoadJob: Job? = null
+    private var sourceLoadGeneration = 0L
     private val galleryShapeBitmaps = LinkedHashMap<String, Bitmap>()
 
     private val undoStack = ArrayDeque<EditorStateSnapshot>()
@@ -123,25 +125,30 @@ class PhotoEditorViewModel(
     // Users should choose their own image instead of having a sample auto-loaded on launch.
 
     fun loadSampleDrawable(@DrawableRes resId: Int, title: String) {
-        viewModelScope.launch {
+        val generation = ++sourceLoadGeneration
+        sourceLoadJob?.cancel()
+        sourceLoadJob = viewModelScope.launch {
             val bmp = withContext(Dispatchers.IO) {
                 val opts = BitmapFactory.Options().apply {
                     inPreferredConfig = Bitmap.Config.ARGB_8888
                 }
                 BitmapFactory.decodeResource(getApplication<Application>().resources, resId, opts)
             }
-            if (bmp != null) {
+            if (generation == sourceLoadGeneration && bmp != null) {
                 setNewSourceBitmap(bmp, title)
             }
         }
     }
 
     fun loadPhotoFromUri(uri: Uri, title: String = "Imported Photo") {
-        viewModelScope.launch {
+        val generation = ++sourceLoadGeneration
+        sourceLoadJob?.cancel()
+        sourceLoadJob = viewModelScope.launch {
             try {
                 val decoded = withContext(Dispatchers.IO) {
                     decodeAndOrientUri(uri)
                 }
+                if (generation != sourceLoadGeneration) return@launch
                 if (decoded != null) {
                     setNewSourceBitmap(decoded, title)
                 } else {
@@ -149,7 +156,10 @@ class PhotoEditorViewModel(
                         it.copy(aiOperationState = AiOperationUiState.Error("Could not decode selected image."))
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
+                if (generation != sourceLoadGeneration) return@launch
                 Log.e(TAG, "Failed to load image URI", e)
                 _uiState.update {
                     it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "Failed to load photo."))
