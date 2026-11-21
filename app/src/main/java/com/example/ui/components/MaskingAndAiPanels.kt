@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.model.AiStudioState
@@ -389,6 +390,15 @@ fun AiStudioPanel(
             .padding(horizontal = 14.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        Text(
+            text = stringResource(id = R.string.ai_cloud_processing_notice),
+            style = MaterialTheme.typography.labelSmall,
+            color = TextMuted,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 2.dp)
+        )
+
         // Mode Switcher: Object Eraser | 1-Click BG Remover
         Row(
             modifier = Modifier
