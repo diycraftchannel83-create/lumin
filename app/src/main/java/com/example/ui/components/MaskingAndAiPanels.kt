@@ -44,16 +44,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.ai.RealEsrganModelCatalog
 import com.example.ai.RealEsrganModelManager
 import kotlinx.coroutines.launch
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
-import com.example.ai.RealEsrganModelCatalog
-import com.example.ai.RealEsrganModelManager
-import com.example.ai.RealEsrganModelSpec
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableFloatStateOf
