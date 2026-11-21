@@ -140,6 +140,51 @@ class FirebaseAiImageRepository : AiImageRepository {
         }
     }
 
+    override suspend fun enhancePhoto(source: Bitmap): AiEditResult = withContext(Dispatchers.Default) {
+        val preparedInput = ImageProcessor.downsampleIfNeeded(source, 1280)
+        try {
+            val response = withTimeout(90_000L) {
+                imageEditModel.generateContent(
+                    content {
+                        image(preparedInput)
+                        text(
+                            "Enhance this photograph to look clean, sharp, detailed, and high quality. " +
+                                "Reduce blur, motion softness where possible, compression artifacts, chroma and luminance noise. " +
+                                "Recover natural fine detail and improve edge clarity without oversharpening, halos, plastic skin, " +
+                                "or unnatural textures. Improve local contrast and tonal clarity while keeping colors realistic. " +
+                                "Preserve the original composition, crop, camera perspective, objects, facial identity, " +
+                                "expressions, clothing, text, and scene exactly. Do not add, remove, replace, or invent objects. " +
+                                "Do not apply a stylized look. Return a natural photographic enhancement."
+                        )
+                    }
+                )
+            }
+            val outputPart = response.candidates.firstOrNull()
+                ?.content?.parts?.filterIsInstance<ImagePart>()
+                ?.firstOrNull()
+                ?: throw IllegalStateException("Gemini did not return an enhanced image.")
+
+            val rawResult = outputPart.image
+            val matched = if (rawResult.width != source.width || rawResult.height != source.height) {
+                Bitmap.createScaledBitmap(rawResult, source.width, source.height, true)
+            } else {
+                rawResult
+            }
+            AiEditResult(
+                bitmap = matched,
+                isSamplePlaceholder = false,
+                notice = "AI Enhance completed. Blur, noise, and detail were improved where possible."
+            )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Log.e(TAG, "AI photo enhancement failed", e)
+            throw e
+        } finally {
+            if (preparedInput !== source) preparedInput.recycle()
+        }
+    }
+
     private fun createAnnotatedMaskGuide(
         base: Bitmap,
         strokes: List<BrushStroke>
