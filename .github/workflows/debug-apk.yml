@@ -34,19 +34,10 @@ jobs:
         run: |
           sdkmanager "platforms;android-36.1" "build-tools;36.0.0"
 
-      - name: Decode Firebase configuration
-        env:
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+      - name: Build Debug APK without Firebase configuration
         run: |
-          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
-            mkdir -p app
-            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > app/google-services.json
-          else
-            echo "Firebase secret not configured; continuing without google-services.json."
-          fi
-
-      - name: Build Debug APK
-        run: gradle --no-daemon assembleDebug
+          rm -f app/google-services.json
+          gradle --no-daemon assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
