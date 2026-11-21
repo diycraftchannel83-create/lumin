@@ -41,8 +41,7 @@ jobs:
         run: |
           set -e
           mkdir -p app/src/main/jni
-          curl -L --retry 3 --fail -o /tmp/ncnn-android-vulkan.zip \\
-            https://github.com/Tencent/ncnn/releases/download/20260526/ncnn-20260526-android-vulkan.zip
+          curl -L --retry 3 --fail -o /tmp/ncnn-android-vulkan.zip https://github.com/Tencent/ncnn/releases/download/20260526/ncnn-20260526-android-vulkan.zip
           unzip -q /tmp/ncnn-android-vulkan.zip -d app/src/main/jni
           test -f app/src/main/jni/arm64-v8a/lib/cmake/ncnn/ncnnConfig.cmake
           test -f app/src/main/jni/x86_64/lib/cmake/ncnn/ncnnConfig.cmake
