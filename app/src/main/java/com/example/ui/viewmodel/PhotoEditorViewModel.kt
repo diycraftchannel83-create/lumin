@@ -14,6 +14,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.R
 import com.example.ai.AiImageRepository
 import com.example.ai.FirebaseAiImageRepository
+import com.example.ai.RealEsrganModelCatalog
+import com.example.ai.RealEsrganModelManager
+import com.example.ai.RealEsrganNative
 import com.example.engine.ExportResult
 import com.example.engine.ImageProcessor
 import com.example.engine.LocalEnhancementEngine
@@ -842,6 +845,43 @@ class PhotoEditorViewModel(
                 refreshFilterThumbnails(); schedulePreviewRender(immediate = true)
             } catch (e: CancellationException) { throw e } catch (e: Exception) {
                 Log.e(TAG, "Local upscale failed", e); _uiState.update { it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "Upscale failed")) }
+            }
+        }
+    }
+
+    fun runRealEsrgan(modelId: String) {
+        val base = workingBaseFullRes ?: return
+        val spec = RealEsrganModelCatalog.find(modelId)
+        if (spec == null) {
+            _uiState.update { it.copy(aiOperationState = AiOperationUiState.Error("Unknown Real-ESRGAN model.")) }
+            return
+        }
+        val manager = RealEsrganModelManager(getApplication())
+        val installed = manager.getInstalled(spec)
+        if (installed == null) {
+            _uiState.update { it.copy(aiOperationState = AiOperationUiState.Error("Download and install the selected model first.")) }
+            return
+        }
+        viewModelScope.launch {
+            _uiState.update { it.copy(aiOperationState = AiOperationUiState.Loading("Running on-device Real-ESRGAN ${spec.scale}×…")) }
+            try {
+                val result = RealEsrganNative.upscale(base, installed, tileSize = 256, useVulkan = true)
+                workingBaseFullRes = result
+                workingBasePreview = ImageProcessor.downsampleIfNeeded(result, 1024)
+                _uiState.update {
+                    it.copy(
+                        aiState = it.aiState.copy(hasEnhancementApplied = true, noticeBanner = "Real-ESRGAN ${spec.displayName} applied"),
+                        aiOperationState = AiOperationUiState.Success("Offline neural upscaling complete (${spec.scale}×)."),
+                        canRevertAiBase = true
+                    )
+                }
+                refreshFilterThumbnails()
+                schedulePreviewRender(immediate = true)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Real-ESRGAN inference failed", e)
+                _uiState.update { it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "Real-ESRGAN processing failed.")) }
             }
         }
     }
