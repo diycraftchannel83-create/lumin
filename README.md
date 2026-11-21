@@ -495,3 +495,8 @@ Fix committed:
 
 The workflows are updated, but the corrected run has not yet been started/verified. The GitHub connector available here can inspect runs and logs but cannot dispatch a new workflow run.
 
+
+
+### Follow-up SDK platform correction
+
+Gradle's compile SDK is configured as Android API 36 with minor API level 1 (`compileSdk release(36) { minorApiLevel = 1 }`). The manual workflows now request `platforms;android-36.1` instead of `android-36`, matching that compile SDK configuration. This correction is committed to both Debug APK and signed Release workflows. It is still awaiting a fresh manual run; the Actions integration available here can inspect runs/logs but cannot dispatch workflow runs.
