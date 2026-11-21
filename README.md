@@ -40,8 +40,8 @@
 - [x] Update Android app display name
 - [x] Update repository README and project metadata
 - [ ] Update in-app branding, titles, dialogs, onboarding and settings
-- [ ] Create final logo, launcher icon and adaptive icon
-- [ ] Create splash screen / launch branding
+- [x] Apply supplied PhotoStudioIcon.png to launcher and adaptive icon resources
+- [x] Add PhotoStudio splash branding from supplied PhotoStudioIcon.png
 - [x] Define initial color tokens and theme palette (typography/spacing refinement remains)
 - [ ] Remove old Lumin branding and placeholder labels
 - [ ] Update export metadata, default filenames and share text where applicable
@@ -413,7 +413,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
-| 2026-11-21 | Phase 0 initial pass | App label, project metadata, Gradle root name, Compose theme/palette and main screen/theme names updated for PhotoStudio | Build/tests not run in this pass | See latest commit |
+| 2026-11-21 | Phase 0 — launcher & splash | Replaced adaptive-icon artwork with supplied PhotoStudioIcon.png; added density-independent artwork and branded launch background/theme | Source/resource inspection only; Gradle build and device splash verification pending | See latest commit |
 
 ## Current Known Release Risks (Initial Audit)
 
