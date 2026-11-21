@@ -19,7 +19,7 @@
 
 ## Roadmap Status
 
-- [ ] Phase 0 — Brand, naming & product foundation
+- [x] Phase 0 — Brand, naming & product foundation (initial rebrand pass; remaining tasks below)
 - [ ] Phase 1 — Android release configuration and security blockers
 - [ ] Phase 2 — Core image engine stability
 - [ ] Phase 3 — Essential editing workflow and non-destructive history
@@ -37,12 +37,12 @@
 
 ### Rebranding
 - [ ] Confirm final brand name: PhotoStudio (availability/trademark check pending)
-- [ ] Update Android app display name
-- [ ] Update repository README and project metadata
+- [x] Update Android app display name
+- [x] Update repository README and project metadata
 - [ ] Update in-app branding, titles, dialogs, onboarding and settings
 - [ ] Create final logo, launcher icon and adaptive icon
 - [ ] Create splash screen / launch branding
-- [ ] Define typography, spacing, component styles and color tokens
+- [x] Define initial color tokens and theme palette (typography/spacing refinement remains)
 - [ ] Remove old Lumin branding and placeholder labels
 - [ ] Update export metadata, default filenames and share text where applicable
 - [ ] Decide final package/application ID before Play Store release (changing it later creates a separate app identity)
@@ -413,11 +413,11 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
-| 2026-11-21 | Roadmap created | Added PhotoStudio rebrand and production checklist | Pending implementation | — |
+| 2026-11-21 | Phase 0 initial pass | App label, project metadata, Gradle root name, Compose theme/palette and main screen/theme names updated for PhotoStudio | Build/tests not run in this pass | See latest commit |
 
 ## Current Known Release Risks (Initial Audit)
 
-- [ ] Final brand/package identity not confirmed
+- [ ] Final brand/package identity not confirmed (applicationId intentionally unchanged pending Play Store identity decision)
 - [ ] Release configuration and signing need verification
 - [ ] Production Firebase/App Check configuration needs verification
 - [ ] AdMob production identifiers need verification
