@@ -381,6 +381,7 @@ fun AiStudioPanel(
     onClearBrush: () -> Unit,
     onRunObjectRemoval: () -> Unit,
     onRunBackgroundRemoval: () -> Unit,
+    onRunAiEnhance: () -> Unit,
     onSelectBackgroundStyle: (BackgroundReplacement) -> Unit,
     onRevertAi: () -> Unit,
     modifier: Modifier = Modifier
@@ -423,8 +424,11 @@ fun AiStudioPanel(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = if (mode == AiToolMode.OBJECT_ERASER) Icons.Rounded.Brush
-                        else Icons.Rounded.PersonSearch,
+                        imageVector = when (mode) {
+                            AiToolMode.OBJECT_ERASER -> Icons.Rounded.Brush
+                            AiToolMode.BACKGROUND_REMOVER -> Icons.Rounded.PersonSearch
+                            AiToolMode.ENHANCE -> Icons.Rounded.AutoAwesome
+                        },
                         contentDescription = null,
                         tint = if (selected) CyanPrecision else TextSecondary,
                         modifier = Modifier.size(15.dp)
@@ -599,7 +603,52 @@ fun AiStudioPanel(
                         )
                     }
                 }
+                AiToolMode.ENHANCE -> {
+                Text(
+                    text = "AI Enhance cleans up blurry or noisy photos, improves edge sharpness and restores natural-looking detail. Results depend on the source image; AI may reconstruct details.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (canRevertAiBase) {
+                        OutlinedButton(
+                            onClick = onRevertAi,
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier.weight(0.8f)
+                        ) {
+                            Text("Revert AI", style = MaterialTheme.typography.labelMedium)
+                        }
+                    }
+                    Button(
+                        onClick = onRunAiEnhance,
+                        enabled = aiOperationState !is AiOperationUiState.Loading,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CyanPrecision,
+                            contentColor = ObsidianVoid
+                        ),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .weight(1.5f)
+                            .testTag("run_ai_enhance_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.AutoAwesome,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Enhance Photo (AI)",
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                    }
+                }
             }
+        }
         }
     }
 }
