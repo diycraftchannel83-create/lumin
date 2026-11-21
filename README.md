@@ -482,3 +482,16 @@ Workflow file: `.github/workflows/debug-apk.yml`
 - Does not run automatically on pushes and has not been executed yet.
 
 To use: open the repository's **Actions** tab, select **PhotoStudio Android Debug APK**, choose **Run workflow**, and download the artifact from the completed run.
+
+
+## CI Workflow Failure Fix — Android SDK Setup
+
+The first manual Debug APK workflow run failed before Gradle started. Root cause from the Actions log: `android-actions/setup-android@v3` attempted to install the obsolete SDK package `tools`, which is no longer available (`Failed to find package 'tools'`).
+
+Fix committed:
+- Configure the setup action to install only `platform-tools`.
+- Explicitly install `platforms;android-36` and `build-tools;36.0.0` with `sdkmanager`.
+- Apply the same correction to the manual signed Release workflow, which used the same setup-action defaults.
+
+The workflows are updated, but the corrected run has not yet been started/verified. The GitHub connector available here can inspect runs and logs but cannot dispatch a new workflow run.
+
