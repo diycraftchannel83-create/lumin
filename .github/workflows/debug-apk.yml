@@ -34,10 +34,20 @@ jobs:
         run: |
           sdkmanager "platforms;android-36.1" "build-tools;36.0.0"
 
-      - name: Build Debug APK without Firebase configuration
+      - name: Decode Firebase configuration from GitHub Secret
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
         run: |
-          rm -f app/google-services.json
-          gradle --no-daemon assembleDebug
+          if [ -z "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+            echo "ERROR: GitHub Secret GOOGLE_SERVICES_JSON_BASE64 is empty or unavailable."
+            exit 1
+          fi
+          echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 --decode > app/google-services.json
+          test -s app/google-services.json
+          echo "Firebase config decoded successfully."
+
+      - name: Build Debug APK
+        run: gradle --no-daemon assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
