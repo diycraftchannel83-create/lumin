@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PhotoStudio</string>
+    <string name="app_name">PhotoStudio</string>\n    <string name="studio_tagline">Your photos, your studio.</string>\n    <string name="studio_empty_prompt">Open a photo to start creating</string>
     <string name="open_photo">Open Photo</string>
     <string name="export_photo">Export</string>
     <string name="compare_before_after">Hold to Compare</string>
