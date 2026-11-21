@@ -324,18 +324,20 @@ fun CanvasStage(
             }
         }
 
-        // Top-Left: Metadata Badge
-        MetadataPill(
-            metadata = uiState.metadata,
-            isComparing = uiState.isComparing,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(4.dp)
-        )
+        // Metadata HUD is only meaningful when an image is loaded.
+        if (activeBitmap != null) {
+            MetadataPill(
+                metadata = uiState.metadata,
+                isComparing = uiState.isComparing,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+            )
+        }
 
         // Top-Right: Live RGB + Luminance Histogram Overlay
         AnimatedVisibility(
-            visible = uiState.showHistogram,
+            visible = uiState.showHistogram && activeBitmap != null,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier
