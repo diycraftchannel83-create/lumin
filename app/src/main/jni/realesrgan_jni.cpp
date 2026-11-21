@@ -66,7 +66,7 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
 
     const int tile = tileSize >= 64 ? tileSize : 256;
     const int padding = 10;
-    ncnn::Mat output(width * scale, height * scale, 3, (size_t)1u);
+    ncnn::Mat output(width * scale, height * scale, 3);
 
     for (int y = 0; y < height; y += tile) {
         for (int x = 0; x < width; x += tile) {
