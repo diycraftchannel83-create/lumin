@@ -185,7 +185,7 @@
 - [x] Model install/remove UI in AI Studio
 - [x] JNI bridge and tiled NCNN inference source with Vulkan capability check
 - [x] Real-ESRGAN inference action wired into the editor state and preview refresh
-- [x] Input/output memory guardrails (6 MP input / 12 MP output limits)
+- [x] Input/output memory guardrails (3 MP input / 8 MP output limits)
 - [ ] Verify model download sources and hashes in automated integration tests
 - [ ] Build native library and Debug APK successfully in CI
 - [ ] Verify inference on Vulkan device and CPU-only fallback
