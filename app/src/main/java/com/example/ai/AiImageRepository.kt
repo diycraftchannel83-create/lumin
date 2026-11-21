@@ -23,4 +23,8 @@ interface AiImageRepository {
     suspend fun removeBackground(
         source: Bitmap
     ): AiEditResult
+
+    suspend fun enhancePhoto(
+        source: Bitmap
+    ): AiEditResult
 }
