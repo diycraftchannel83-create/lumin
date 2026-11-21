@@ -47,7 +47,7 @@ fun PhotoStudioTheme(
 ) {
     MaterialTheme(
         colorScheme = PhotoStudioDarkColorScheme,
-        typography = LuminaTypography,
+        typography = PhotoStudioTypography,
         shapes = PhotoStudioShapes,
         content = content
     )
