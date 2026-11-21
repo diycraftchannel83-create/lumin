@@ -39,10 +39,11 @@
 - [ ] Confirm final brand name: PhotoStudio (availability/trademark check pending)
 - [x] Update Android app display name
 - [x] Update repository README and project metadata
-- [ ] Update in-app branding, titles, dialogs, onboarding and settings
+- [ ] Update in-app branding, titles, dialogs, onboarding and settings (empty workspace branding added)
 - [x] Apply supplied PhotoStudioIcon.png to launcher and adaptive icon resources
 - [x] Add PhotoStudio splash branding from supplied PhotoStudioIcon.png
 - [x] Define initial color tokens and theme palette (typography/spacing refinement remains)
+- [x] Remove legacy LuminaApplication and LuminaTypography code symbols; remaining billing SKU intentionally retained
 - [ ] Remove old Lumin branding and placeholder labels
 - [ ] Update export metadata, default filenames and share text where applicable
 - [ ] Decide final package/application ID before Play Store release (changing it later creates a separate app identity)
@@ -413,7 +414,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
-| 2026-11-21 | Phase 0 — launcher & splash | Replaced adaptive-icon artwork with supplied PhotoStudioIcon.png; added density-independent artwork and branded launch background/theme | Source/resource inspection only; Gradle build and device splash verification pending | See latest commit |
+| 2026-11-21 | Phase 0 — branding continuation | Renamed application class and typography symbol to PhotoStudio; added branded empty-editor workspace; preserved legacy billing SKU to avoid product-ID breakage | Build/unit tests not run; source/resource inspection only | See latest commit |
 
 ## Current Known Release Risks (Initial Audit)
 
