@@ -524,3 +524,14 @@ Gradle's compile SDK is configured as Android API 36 with minor API level 1 (`co
 - [ ] Evaluate licensed on-device neural restoration model; retain classical fallback
 
 **Accuracy note:** The current Local Enhance is classical image processing, not a neural AI model. It improves perceived clarity but cannot reliably reconstruct missing detail. Upscale 2× is interpolation, not AI super-resolution.
+
+
+### Local Enhance Studio — Phase 2
+- [x] Add interactive Sharpen slider (0–100%)
+- [x] Add Denoise slider (0–100%)
+- [x] Add Local Contrast / Detail slider (0–100%)
+- [x] Pass slider settings to local engine on Apply
+- [ ] Add non-destructive parameter preview before applying
+- [ ] Add before/after comparison dedicated to Local Enhance
+- [ ] Optimize repeated parameter changes against a retained source bitmap
+- [ ] Add instrumentation/unit tests for image quality and memory guards
