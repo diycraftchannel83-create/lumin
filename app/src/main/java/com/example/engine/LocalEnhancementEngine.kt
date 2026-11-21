@@ -30,7 +30,7 @@ object LocalEnhancementEngine {
   val o=IntArray(p.size)
   for(y in 0 until h) for(x in 0 until w) {
    var a=0;var r=0;var g=0;var b=0;var n=0
-   for(dy in -1..1) for(dx in -1..1) { val c=p[(y+dy).coerceIn(0,h-1)*w+(x+dx).coerceIn(0,w-1); a+=c ushr 24 and 255;r+=c ushr 16 and 255;g+=c ushr 8 and 255;b+=c and 255;n++ }
+   for(dy in -1..1) for(dx in -1..1) { val c=p[(y+dy).coerceIn(0,h-1)*w+(x+dx).coerceIn(0,w-1)]; a+=c ushr 24 and 255;r+=c ushr 16 and 255;g+=c ushr 8 and 255;b+=c and 255;n++ }
    o[y*w+x]=(a/n shl 24) or (r/n shl 16) or (g/n shl 8) or b/n
   }; return o
  }
