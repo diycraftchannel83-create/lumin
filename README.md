@@ -178,6 +178,16 @@
 
 ## Phase 5 — AI Editing & Privacy
 
+### AI Photo Enhance
+
+- [x] Add AI Enhance mode to AI Studio
+- [x] AI clean-up prompt for blur/softness, noise, compression artifacts, and detail clarity
+- [x] Preserve scene, composition, faces/identity, text and colors as instructed; avoid stylized edits
+- [x] Process with Gemini image model and match output dimensions to source (input is downsampled to max 1280px before cloud processing)
+- [x] Loading, success, timeout, quota and error states
+- [x] Revert AI result to original loaded photo
+- [ ] Device/real-image quality QA (AI can reconstruct or hallucinate details; enhancement is not guaranteed to recover true lost detail)
+
 ### AI Object Removal
 - [ ] Mask brush and eraser
 - [ ] Mask feather/refinement
@@ -411,6 +421,8 @@ A task can be marked complete only when:
 7. Build verification status is recorded.
 
 ## Progress Log
+
+| 2026-11-21 | Phase 5 — AI Photo Enhance | Added AI Enhance mode to AI Studio with Gemini enhancement prompt, cloud processing, output dimension matching, status/error handling and Revert AI. Input is capped at 1280px before AI; returned image is resized to original dimensions, so users should be informed AI may reconstruct details and cannot guarantee true recovery of blur. | Source-level only; build/device QA pending | `010223a` (implementation commit) |
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
