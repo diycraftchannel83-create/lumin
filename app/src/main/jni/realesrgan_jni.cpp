@@ -96,8 +96,6 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
             extractor.set_num_threads(2);
             if (extractor.input("data", padded) != 0) {
                 LOGE("Failed to submit input tile");
-                net.clear();
-                if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
             ncnn::Mat tileOutput;
