@@ -55,6 +55,7 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
     net.opt.use_fp16_storage = gpuAvailable;
     net.opt.use_fp16_arithmetic = gpuAvailable;
     net.opt.use_fp16_packed = gpuAvailable;
+    net.opt.num_threads = 2;
     const std::string param = jstringToString(env, paramPath);
     const std::string model = jstringToString(env, modelPath);
     if (net.load_param(param.c_str()) != 0 || net.load_model(model.c_str()) != 0) {
@@ -83,17 +84,23 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
             const int borderTop = regionY0 == 0 ? padding : 0;
             const int borderRight = regionX1 == width ? padding : 0;
             const int borderBottom = regionY1 == height ? padding : 0;
-            ncnn::Mat region = source.crop(regionX0, regionY0, regionX1 - regionX0, regionY1 - regionY0);
+            ncnn::Mat region(regionX1 - regionX0, regionY1 - regionY0, 3);
+            for (int c = 0; c < 3; ++c) {
+                for (int ry = 0; ry < region.h; ++ry) {
+                    const float* srcRow = source.channel(c).row<float>(regionY0 + ry);
+                    float* dstRow = region.channel(c).row<float>(ry);
+                    std::copy(srcRow + regionX0, srcRow + regionX1, dstRow);
+                }
+            }
             ncnn::Mat padded;
             if (borderLeft || borderTop || borderRight || borderBottom) {
-                ncnn::copy_make_border(region, padded, borderTop, borderBottom, borderLeft, borderRight, ncnn::BORDER_REPLICATE);
+                ncnn::copy_make_border(region, padded, borderTop, borderBottom, borderLeft, borderRight, ncnn::BORDER_REPLICATE, 0.f);
             } else {
                 padded = region;
             }
 
             ncnn::Extractor extractor = net.create_extractor();
             extractor.set_light_mode(true);
-            extractor.set_num_threads(2);
             if (extractor.input("data", padded) != 0) {
                 LOGE("Failed to submit input tile");
                 return nullptr;
