@@ -31,6 +31,9 @@ object RealEsrganNative {
         useVulkan: Boolean = true
     ): Bitmap = withContext(Dispatchers.Default) {
         check(isAvailable()) { "Real-ESRGAN native engine is not installed in this build." }
+        require(source.width <= 8192 && source.height <= 8192) {
+            "Source dimensions exceed the safe native processing limit."
+        }
         val outWidth = source.width * model.spec.scale
         val outHeight = source.height * model.spec.scale
         require(outWidth.toLong() * outHeight <= 8_000_000L) {
