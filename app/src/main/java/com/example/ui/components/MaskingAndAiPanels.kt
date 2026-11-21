@@ -35,6 +35,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import com.example.ai.RealEsrganModelCatalog
+import com.example.ai.RealEsrganModelManager
+import com.example.ai.RealEsrganModelSpec
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableFloatStateOf
@@ -576,6 +586,8 @@ fun AiStudioPanel(
             }
 
             AiToolMode.ENHANCE -> {
+                RealEsrganModelManagerPanel()
+
                 Text(
                     text = "AI Enhance cleans up blurry or noisy photos, improves edge sharpness and restores natural-looking detail. Results depend on the source image; AI may reconstruct details.",
                     style = MaterialTheme.typography.bodySmall,
