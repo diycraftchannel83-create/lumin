@@ -117,9 +117,8 @@ class PhotoEditorViewModel(
     private var renderJob: Job? = null
     private var thumbsJob: Job? = null
 
-    init {
-        loadSampleDrawable(R.drawable.img_sample_landscape, "Fjord Golden Hour")
-    }
+    // Start in the branded empty workspace. Sample images remain available from the sample picker.
+    // Users should choose their own image instead of having a sample auto-loaded on launch.
 
     fun loadSampleDrawable(@DrawableRes resId: Int, title: String) {
         viewModelScope.launch {
