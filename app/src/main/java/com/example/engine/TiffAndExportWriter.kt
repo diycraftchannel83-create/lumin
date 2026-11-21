@@ -43,7 +43,7 @@ object TiffAndExportWriter {
     ): ExportResult = withContext(Dispatchers.IO) {
         val scaled = scaleForResolution(processedFullRes, resolution)
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
-        val fileName = "LuminaLab_${timestamp}.${format.extension}"
+        val fileName = "PhotoStudio_${timestamp}.${format.extension}"
 
         // 1. Write to app cache exports/ for instant FileProvider sharing + exact byte count
         val exportDir = File(context.cacheDir, "exports").apply { mkdirs() }
