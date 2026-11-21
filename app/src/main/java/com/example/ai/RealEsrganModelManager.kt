@@ -45,10 +45,20 @@ class RealEsrganModelManager(context: Context) {
         val dir = modelDir(spec).apply { mkdirs() }
         val param = File(dir, spec.paramFileName)
         val bin = File(dir, spec.binFileName)
-        downloadAtomically(spec.paramUrl, param) { onProgress(spec.paramFileName, it) }
-        downloadAtomically(spec.binUrl, bin) { onProgress(spec.binFileName, it) }
-        require(param.length() > 100 && bin.length() > 1024) { "Downloaded model files are incomplete." }
-        InstalledModel(spec, param, bin)
+        try {
+            downloadAtomically(spec.paramUrl, param) { onProgress(spec.paramFileName, it) }
+            downloadAtomically(spec.binUrl, bin) { onProgress(spec.binFileName, it) }
+            require(param.length() > 100 && bin.length() > 1024) { "Downloaded model files are incomplete." }
+            val pairSizeMb = (param.length() + bin.length()) / (1024f * 1024f)
+            require(pairSizeMb >= spec.approximateDownloadMb * 0.70f) {
+                "Model download appears truncated (${pairSizeMb} MB). Please retry."
+            }
+            InstalledModel(spec, param, bin)
+        } catch (error: Throwable) {
+            param.delete()
+            bin.delete()
+            throw error
+        }
     }
 
     fun remove(spec: RealEsrganModelSpec): Boolean = modelDir(spec).deleteRecursively()
