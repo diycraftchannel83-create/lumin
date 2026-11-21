@@ -445,3 +445,26 @@ A task can be marked complete only when:
 - [ ] Play Store privacy, Data Safety and listing assets need completion
 
 > **Working rule:** proceed phase-by-phase. Prioritize release blockers and correctness before adding more feature scope. Update this document continuously so future work can resume without losing the project state.
+
+
+## Release Signing & Manual GitHub Actions Workflow
+
+The repository owner reports that these GitHub Actions secrets are already configured. The release Gradle signing configuration and manual workflow now use these exact names:
+
+- `ANDROID_KEYSTORE_BASE64`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+- `GOOGLE_SERVICES_JSON_BASE64`
+
+**Workflow:** `.github/workflows/manual-release.yml`
+
+- Trigger: manual only (`workflow_dispatch)); it will not run automatically on pushes.
+- Decodes the upload keystore into the GitHub runner's temporary directory.
+- Decodes Firebase configuration into `app/google-services.json` for the job only.
+- Runs `bundleRelease` with the configured signing environment.
+- Uploads the signed AAB as a workflow artifact for 14 days.
+- Does not commit decoded keystore or Firebase configuration files.
+
+**Important:** The workflow has been added but intentionally has not been run. Build, test, Firebase package matching, signing validation and AAB inspection remain deferred.
+
