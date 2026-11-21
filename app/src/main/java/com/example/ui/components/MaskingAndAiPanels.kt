@@ -430,8 +430,10 @@ private fun RealEsrganModelManagerPanel(onRunModel: (String) -> Unit) {
                     scope.launch {
                         try {
                             manager.install(selected) { file, percent ->
-                                progressFile = file
-                                progress = percent.toFloat()
+                                scope.launch {
+                                    progressFile = file
+                                    progress = percent.toFloat()
+                                }
                             }
                             installedIds = manager.installedModels().map { it.id }.toSet()
                             status = "Model downloaded and installed."
