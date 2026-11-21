@@ -300,11 +300,13 @@ fun CanvasStage(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.photostudio_icon),
+                // Avoid loading the malformed/missing photostudio_icon.png resource.
+                // Use a vector Material icon so the empty workspace cannot crash at startup.
+                Icon(
+                    imageVector = Icons.Rounded.AutoAwesome,
                     contentDescription = "PhotoStudio",
-                    modifier = Modifier.size(112.dp),
-                    contentScale = ContentScale.Fit
+                    tint = CyanPrecision,
+                    modifier = Modifier.size(112.dp)
                 )
                 Text(
                     text = "PhotoStudio",
