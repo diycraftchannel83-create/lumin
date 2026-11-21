@@ -72,9 +72,23 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
         for (int x = 0; x < width; x += tile) {
             const int tileW = std::min(tile, width - x);
             const int tileH = std::min(tile, height - y);
-            ncnn::Mat core = source.crop(x, y, tileW, tileH);
+
+            // Include real neighboring pixels around each tile to reduce stitching seams.
+            const int regionX0 = std::max(0, x - padding);
+            const int regionY0 = std::max(0, y - padding);
+            const int regionX1 = std::min(width, x + tileW + padding);
+            const int regionY1 = std::min(height, y + tileH + padding);
+            const int borderLeft = regionX0 == 0 ? padding : 0;
+            const int borderTop = regionY0 == 0 ? padding : 0;
+            const int borderRight = regionX1 == width ? padding : 0;
+            const int borderBottom = regionY1 == height ? padding : 0;
+            ncnn::Mat region = source.crop(regionX0, regionY0, regionX1 - regionX0, regionY1 - regionY0);
             ncnn::Mat padded;
-            ncnn::copy_make_border(core, padded, padding, padding, padding, padding, ncnn::BORDER_REPLICATE);
+            if (borderLeft || borderTop || borderRight || borderBottom) {
+                ncnn::copy_make_border(region, padded, borderTop, borderBottom, borderLeft, borderRight, ncnn::BORDER_REPLICATE);
+            } else {
+                padded = region;
+            }
 
             ncnn::Extractor extractor = net.create_extractor();
             extractor.set_light_mode(true);
@@ -82,7 +96,6 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
             if (extractor.input("data", padded) != 0) {
                 LOGE("Failed to submit input tile");
                 net.clear();
-
                 if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
@@ -90,28 +103,27 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
             if (extractor.extract("output", tileOutput) != 0 || tileOutput.empty()) {
                 LOGE("Failed to infer tile");
                 net.clear();
-
                 if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
 
+            const int srcOffsetX = (x - regionX0 + borderLeft) * scale;
+            const int srcOffsetY = (y - regionY0 + borderTop) * scale;
             const int outX = x * scale;
             const int outY = y * scale;
             const int coreW = tileW * scale;
             const int coreH = tileH * scale;
-            const int cropPad = padding * scale;
-            if (tileOutput.w < coreW + cropPad * 2 || tileOutput.h < coreH + cropPad * 2) {
+            if (tileOutput.w < srcOffsetX + coreW || tileOutput.h < srcOffsetY + coreH) {
                 LOGE("Unexpected model output shape: %dx%d", tileOutput.w, tileOutput.h);
                 net.clear();
-
                 if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
             for (int oy = 0; oy < coreH; ++oy) {
-                const int srcY = oy + cropPad;
+                const int srcY = srcOffsetY + oy;
                 const int dstY = outY + oy;
                 for (int ox = 0; ox < coreW; ++ox) {
-                    const int srcX = ox + cropPad;
+                    const int srcX = srcOffsetX + ox;
                     const int dstX = outX + ox;
                     for (int c = 0; c < 3; ++c) {
                         output.channel(c)[dstY * output.w + dstX] =
