@@ -383,7 +383,7 @@ fun MaskingPanel(
 }
 
 @Composable
-private fun RealEsrganModelManagerPanel(onRunModel: (String) -> Unit) {
+private fun RealEsrganModelManagerPanel(onRunModel: (String) -> Unit, isProcessing: Boolean) {
     val context = LocalContext.current
     val manager = remember(context) { RealEsrganModelManager(context) }
     val scope = rememberCoroutineScope()
@@ -442,19 +442,19 @@ private fun RealEsrganModelManagerPanel(onRunModel: (String) -> Unit) {
                         } finally { progress = null }
                     }
                 },
-                enabled = progress == null && selected.id !in installedIds,
+                enabled = progress == null && !isProcessing && selected.id !in installedIds,
                 colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid),
                 modifier = Modifier.weight(1f)
             ) { Text(if (selected.id in installedIds) "Installed" else "Download Model") }
             OutlinedButton(
                 onClick = { manager.remove(selected); installedIds = manager.installedModels().map { it.id }.toSet(); status = "Model removed."; error = null },
-                enabled = progress == null && selected.id in installedIds,
+                enabled = progress == null && !isProcessing && selected.id in installedIds,
                 modifier = Modifier.weight(1f)
             ) { Text("Remove") }
         }
         Button(
             onClick = { onRunModel(selected.id) },
-            enabled = progress == null && selected.id in installedIds,
+            enabled = progress == null && !isProcessing && selected.id in installedIds,
             colors = ButtonDefaults.buttonColors(containerColor = EmeraldSuccess, contentColor = ObsidianVoid),
             modifier = Modifier.fillMaxWidth().testTag("run_realesrgan_button")
         ) { Text("Run Real-ESRGAN AI Upscale") }
@@ -665,7 +665,7 @@ fun AiStudioPanel(
             }
 
             AiToolMode.ENHANCE -> {
-                RealEsrganModelManagerPanel(onRunRealEsrgan)
+                RealEsrganModelManagerPanel(onRunRealEsrgan, aiOperationState is AiOperationUiState.Loading)
 
                 Text(
                     text = "AI Enhance cleans up blurry or noisy photos, improves edge sharpness and restores natural-looking detail. Results depend on the source image; AI may reconstruct details.",
