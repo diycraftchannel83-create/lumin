@@ -865,7 +865,12 @@ class PhotoEditorViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(aiOperationState = AiOperationUiState.Loading("Running on-device Real-ESRGAN ${spec.scale}×…")) }
             try {
-                val result = RealEsrganNative.upscale(base, installed, tileSize = 256, useVulkan = true)
+                val result = try {
+                    RealEsrganNative.upscale(base, installed, tileSize = 256, useVulkan = true)
+                } catch (gpuError: Exception) {
+                    Log.w(TAG, "Vulkan inference failed; retrying on CPU", gpuError)
+                    RealEsrganNative.upscale(base, installed, tileSize = 128, useVulkan = false)
+                }
                 workingBaseFullRes = result
                 workingBasePreview = ImageProcessor.downsampleIfNeeded(result, 1024)
                 _uiState.update {
