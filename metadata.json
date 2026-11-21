@@ -1,6 +1,6 @@
 {
-  "name": "Lumina Lab",
-  "description": "Professional RAW & photo editor with Lightroom-grade exposure, color, tone curves, masking tools, AI object removal, one-click background extraction, and lossless high-res export.",
+  "name": "PhotoStudio",
+  "description": "AI Photo Editor & Creative Studio. Professional photo editing with exposure, color, tone curves, masking, AI-assisted object removal, background extraction, and high-resolution export.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
