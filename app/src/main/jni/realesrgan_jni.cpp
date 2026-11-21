@@ -50,13 +50,15 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
     const bool gpuAvailable = useVulkan == JNI_TRUE && ncnn::get_gpu_count() > 0;
     ncnn::Net net;
     net.opt.use_vulkan_compute = gpuAvailable;
-    net.opt.use_fp16_storage = true;
-    net.opt.use_fp16_arithmetic = true;
-    net.opt.use_fp16_packed = true;
+    net.opt.use_fp16_storage = gpuAvailable;
+    net.opt.use_fp16_arithmetic = gpuAvailable;
+    net.opt.use_fp16_packed = gpuAvailable;
     const std::string param = jstringToString(env, paramPath);
     const std::string model = jstringToString(env, modelPath);
     if (net.load_param(param.c_str()) != 0 || net.load_model(model.c_str()) != 0) {
         LOGE("Failed to load model pair");
+        net.clear();
+
         if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
         return nullptr;
     }
@@ -78,12 +80,16 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
             extractor.set_num_threads(2);
             if (extractor.input("data", padded) != 0) {
                 LOGE("Failed to submit input tile");
+                net.clear();
+
                 if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
             ncnn::Mat tileOutput;
             if (extractor.extract("output", tileOutput) != 0 || tileOutput.empty()) {
                 LOGE("Failed to infer tile");
+                net.clear();
+
                 if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
@@ -95,6 +101,8 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
             const int cropPad = padding * scale;
             if (tileOutput.w < coreW + cropPad * 2 || tileOutput.h < coreH + cropPad * 2) {
                 LOGE("Unexpected model output shape: %dx%d", tileOutput.w, tileOutput.h);
+                net.clear();
+
                 if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
                 return nullptr;
             }
@@ -113,6 +121,7 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
         }
     }
 
+    net.clear();
     if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
     std::vector<unsigned char> rgb((size_t)output.w * output.h * 3);
     ncnn::Mat packed = output;
