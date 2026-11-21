@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.example.R
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -311,12 +312,12 @@ fun CanvasStage(
                     color = TextPrimary
                 )
                 Text(
-                    text = "Your photos, your studio.",
+                    text = stringResource(id = R.string.studio_tagline),
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
                 Text(
-                    text = "Open a photo to start creating",
+                    text = stringResource(id = R.string.studio_empty_prompt),
                     style = MaterialTheme.typography.labelLarge,
                     color = CyanPrecision
                 )
