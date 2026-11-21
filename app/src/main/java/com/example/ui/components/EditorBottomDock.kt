@@ -144,6 +144,7 @@ fun EditorBottomDock(
                     onClearBrush = viewModel::clearAiEraserStrokes,
                     onRunObjectRemoval = viewModel::runAiObjectRemoval,
                     onRunBackgroundRemoval = viewModel::runOneClickBackgroundRemoval,
+                    onRunAiEnhance = viewModel::runAiEnhance,
                     onSelectBackgroundStyle = viewModel::selectBackgroundReplacement,
                     onRevertAi = viewModel::revertAiEdits
                 )
