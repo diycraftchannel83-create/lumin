@@ -89,7 +89,7 @@ fun RemoveAdsModalSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.WorkspacePremium,
-                        contentDescription = "Lumina Pro Ad-Free",
+                        contentDescription = "PhotoStudio Pro Ad-Free",
                         tint = AmberWarm,
                         modifier = Modifier.size(24.dp)
                     )
@@ -184,7 +184,7 @@ fun RemoveAdsModalSheet(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Lumina Pro Active — Ads Removed",
+                        text = "PhotoStudio Pro Active — Ads Removed",
                         style = MaterialTheme.typography.titleSmall,
                         color = TextPrimary
                     )
