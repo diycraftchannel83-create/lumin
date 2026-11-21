@@ -36,6 +36,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -382,7 +384,7 @@ fun AiStudioPanel(
     onRunObjectRemoval: () -> Unit,
     onRunBackgroundRemoval: () -> Unit,
     onRunAiEnhance: () -> Unit,
-    onRunLocalEnhance: () -> Unit,
+    onRunLocalEnhance: (Float, Float, Float) -> Unit,
     onUpscale2xLocal: () -> Unit,
     onSelectBackgroundStyle: (BackgroundReplacement) -> Unit,
     onRevertAi: () -> Unit,
@@ -579,8 +581,11 @@ fun AiStudioPanel(
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
+                PrecisionSlider(label = "Sharpen", value = sharpen.value * 100f, valueRange = 0f..100f, formattedValue = "${sharpen.value.times(100).toInt()}%", onValueChange = { sharpen.value = it / 100f }, onValueChangeFinished = {}, onResetToDefault = { sharpen.value = 0.65f }, accentColor = CyanPrecision)
+                PrecisionSlider(label = "Denoise", value = denoise.value * 100f, valueRange = 0f..100f, formattedValue = "${denoise.value.times(100).toInt()}%", onValueChange = { denoise.value = it / 100f }, onValueChangeFinished = {}, onResetToDefault = { denoise.value = 0.25f }, accentColor = EmeraldSuccess)
+                PrecisionSlider(label = "Local Contrast / Detail", value = detailContrast.value * 100f, valueRange = 0f..100f, formattedValue = "${detailContrast.value.times(100).toInt()}%", onValueChange = { detailContrast.value = it / 100f }, onValueChangeFinished = {}, onResetToDefault = { detailContrast.value = 0.35f }, accentColor = AmberWarm)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = onRunLocalEnhance, enabled = aiOperationState !is AiOperationUiState.Loading, colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid), shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(1f).testTag("run_local_enhance_button")) { Text("Local Enhance") }
+                    Button(onClick = { onRunLocalEnhance(sharpen.value, denoise.value, detailContrast.value) }, enabled = aiOperationState !is AiOperationUiState.Loading, colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid), shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(1f).testTag("run_local_enhance_button")) { Text("Apply Local Enhance") }
                     OutlinedButton(onClick = onUpscale2xLocal, enabled = aiOperationState !is AiOperationUiState.Loading, shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(1f).testTag("local_upscale_2x_button")) { Text("Upscale 2×") }
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
