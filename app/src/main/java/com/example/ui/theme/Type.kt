@@ -28,7 +28,7 @@ val MonoFontFamily = FontFamily(
     Font(R.font.jetbrains_mono, FontWeight.SemiBold)
 )
 
-val LuminaTypography = Typography(
+val PhotoStudioTypography = Typography(
     displaySmall = TextStyle(
         fontFamily = DisplayFontFamily,
         fontWeight = FontWeight.SemiBold,
