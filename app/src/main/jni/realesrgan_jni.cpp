@@ -24,7 +24,7 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
         jint width, jint height, jstring paramPath, jstring modelPath,
         jint scale, jint tileSize, jboolean useVulkan) {
     if (!sourceArgb || width <= 0 || height <= 0 || (scale != 2 && scale != 4) ||
-        (int64_t)width * height > 6000000LL || (int64_t)width * height * scale * scale > 12000000LL) {
+        (int64_t)width * height > 3000000LL || (int64_t)width * height * scale * scale > 8000000LL) {
         return nullptr;
     }
     const jsize sourceCount = env->GetArrayLength(sourceArgb);
