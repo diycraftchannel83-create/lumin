@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lumina Lab</string>
+    <string name="app_name">PhotoStudio</string>
     <string name="open_photo">Open Photo</string>
     <string name="export_photo">Export</string>
     <string name="compare_before_after">Hold to Compare</string>
@@ -16,12 +16,12 @@
     <string name="import_shape_from_gallery">Import shape from gallery</string>
     <string name="import_shape_short">Import Shape</string>
     <string name="ai_firebase_notice">Sample Preview Only — Connect Firebase AI Logic to run live Gemini object removal &amp; subject extraction.</string>
-    <!-- Replace admob_app_id with your actual AdMob App ID (ca-app-pub-1254774552944426~XXXXXXXXXX) from AdMob Console -->
+    <!-- Replace admob_app_id with your actual AdMob App ID from AdMob Console before release. -->
     <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
     <string name="admob_app_open_unit_id" translatable="false">ca-app-pub-1254774552944426/9533896500</string>
     <string name="admob_interstitial_unit_id" translatable="false">ca-app-pub-1254774552944426/3774492347</string>
     <string name="play_product_remove_ads" translatable="false">lumina_premium_remove_ads</string>
-    <string name="remove_ads_title">Lumina Pro • Ad-Free</string>
+    <string name="remove_ads_title">PhotoStudio Pro • Ad-Free</string>
     <string name="remove_ads_cta">Remove Ads</string>
     <string name="pro_badge">PRO</string>
 </resources>
