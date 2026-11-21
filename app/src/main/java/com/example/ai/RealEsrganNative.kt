@@ -33,8 +33,8 @@ object RealEsrganNative {
         check(isAvailable()) { "Real-ESRGAN native engine is not installed in this build." }
         val outWidth = source.width * model.spec.scale
         val outHeight = source.height * model.spec.scale
-        require(outWidth.toLong() * outHeight <= 48_000_000L) {
-            "Upscaled output exceeds the safe 48 MP memory limit."
+        require(outWidth.toLong() * outHeight <= 24_000_000L) {
+            "Upscaled output exceeds the safe 24 MP memory limit."
         }
         val output = Bitmap.createBitmap(outWidth, outHeight, Bitmap.Config.ARGB_8888)
         val pixels = IntArray(source.width * source.height)
