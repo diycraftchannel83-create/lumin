@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <cstdint>
 #include "net.h"
 #include "gpu.h"
 
