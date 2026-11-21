@@ -34,16 +34,16 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
     env->GetIntArrayRegion(sourceArgb, 0, sourceCount, argb.data());
     if (env->ExceptionCheck()) return nullptr;
 
-    ncnn::Mat source(width, height, 3, (size_t)1u);
+    ncnn::Mat source(width, height, 3);
     for (int y = 0; y < height; ++y) {
-        unsigned char* rowR = source.channel(0).row<unsigned char>(y);
-        unsigned char* rowG = source.channel(1).row<unsigned char>(y);
-        unsigned char* rowB = source.channel(2).row<unsigned char>(y);
+        float* rowR = source.channel(0).row<float>(y);
+        float* rowG = source.channel(1).row<float>(y);
+        float* rowB = source.channel(2).row<float>(y);
         for (int x = 0; x < width; ++x) {
             const uint32_t pixel = static_cast<uint32_t>(argb[y * width + x]);
-            rowR[x] = (pixel >> 16) & 0xff;
-            rowG[x] = (pixel >> 8) & 0xff;
-            rowB[x] = pixel & 0xff;
+            rowR[x] = ((pixel >> 16) & 0xff) / 255.f;
+            rowG[x] = ((pixel >> 8) & 0xff) / 255.f;
+            rowB[x] = (pixel & 0xff) / 255.f;
         }
     }
 
@@ -136,15 +136,17 @@ Java_com_example_ai_RealEsrganNative_nativeUpscale(
 
     net.clear();
     if (useVulkan == JNI_TRUE) ncnn::destroy_gpu_instance();
-    std::vector<unsigned char> rgb((size_t)output.w * output.h * 3);
-    ncnn::Mat packed = output;
-    packed.to_pixels(rgb.data(), ncnn::Mat::PIXEL_RGB);
     std::vector<jint> result((size_t)output.w * output.h);
-    for (size_t i = 0; i < result.size(); ++i) {
-        const unsigned int r = rgb[i * 3];
-        const unsigned int g = rgb[i * 3 + 1];
-        const unsigned int b = rgb[i * 3 + 2];
-        result[i] = static_cast<jint>(0xff000000u | (r << 16) | (g << 8) | b);
+    for (int y = 0; y < output.h; ++y) {
+        const float* rowR = output.channel(0).row<float>(y);
+        const float* rowG = output.channel(1).row<float>(y);
+        const float* rowB = output.channel(2).row<float>(y);
+        for (int x = 0; x < output.w; ++x) {
+            const unsigned int r = static_cast<unsigned int>(std::clamp(rowR[x] * 255.f, 0.f, 255.f));
+            const unsigned int g = static_cast<unsigned int>(std::clamp(rowG[x] * 255.f, 0.f, 255.f));
+            const unsigned int b = static_cast<unsigned int>(std::clamp(rowB[x] * 255.f, 0.f, 255.f));
+            result[(size_t)y * output.w + x] = static_cast<jint>(0xff000000u | (r << 16) | (g << 8) | b);
+        }
     }
     jintArray outArray = env->NewIntArray(static_cast<jsize>(result.size()));
     if (!outArray) return nullptr;
