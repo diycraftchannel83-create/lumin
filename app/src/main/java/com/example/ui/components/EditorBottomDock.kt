@@ -146,6 +146,7 @@ fun EditorBottomDock(
                     onRunBackgroundRemoval = viewModel::runOneClickBackgroundRemoval,
                     onRunAiEnhance = viewModel::runAiEnhance,
                     onRunLocalEnhance = { sharpen, denoise, contrast -> viewModel.runLocalEnhance(sharpen, denoise, contrast) },
+                    onRunRealEsrgan = viewModel::runRealEsrgan,
                     onUpscale2xLocal = viewModel::upscaleImage2xLocal,
                     onSelectBackgroundStyle = viewModel::selectBackgroundReplacement,
                     onRevertAi = viewModel::revertAiEdits
