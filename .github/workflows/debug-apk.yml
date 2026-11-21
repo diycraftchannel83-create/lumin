@@ -32,7 +32,16 @@ jobs:
 
       - name: Install Android platform and build tools
         run: |
-          sdkmanager "platforms;android-36.1" "build-tools;36.0.0"
+          sdkmanager "platforms;android-36.1" "build-tools;36.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+
+      - name: Download NCNN Android Vulkan SDK
+        run: |
+          set -e
+          mkdir -p app/src/main/jni
+          curl -L --retry 3 --fail -o /tmp/ncnn-android-vulkan.zip \\
+            https://github.com/Tencent/ncnn/releases/download/20260526/ncnn-20260526-android-vulkan.zip
+          unzip -q /tmp/ncnn-android-vulkan.zip -d app/src/main/jni
+          test -f app/src/main/jni/ncnn-20260526-android-vulkan/arm64-v8a/lib/cmake/ncnn/ncnnConfig.cmake
 
       - name: Use only Firebase configuration from GitHub Secret
         env:
@@ -68,6 +77,8 @@ jobs:
           print("Firebase secret prepared for PhotoStudio package.")
           PY
       - name: Build Debug APK with Firebase Secret
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
         run: gradle --no-daemon assembleDebug
 
       - name: Upload Debug APK
