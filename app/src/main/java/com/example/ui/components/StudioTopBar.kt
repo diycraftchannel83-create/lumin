@@ -213,7 +213,7 @@ fun StudioTopBar(
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.WorkspacePremium,
-                        contentDescription = if (isPremiumAdFree) "Lumina Pro active" else "Remove ads",
+                        contentDescription = if (isPremiumAdFree) "PhotoStudio Pro active" else "Remove ads",
                         tint = if (isPremiumAdFree) EmeraldSuccess else AmberWarm,
                         modifier = Modifier.size(15.dp)
                     )
