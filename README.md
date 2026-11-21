@@ -43,7 +43,7 @@
 - [x] Apply supplied PhotoStudioIcon.png to launcher and adaptive icon resources
 - [x] Add PhotoStudio splash branding from supplied PhotoStudioIcon.png
 - [x] Define initial color tokens and theme palette (typography/spacing refinement remains)
-- [x] Remove legacy LuminaApplication and LuminaTypography code symbols; remaining billing SKU intentionally retained
+- [x] Rename legacy application and typography code symbols to PhotoStudio; legacy billing SKU intentionally retained for product compatibility
 - [ ] Remove old Lumin branding and placeholder labels
 - [ ] Update export metadata, default filenames and share text where applicable
 - [ ] Decide final package/application ID before Play Store release (changing it later creates a separate app identity)
