@@ -573,12 +573,21 @@ object ImageProcessor {
     }
 
     fun applyExposureColorFilter(source: Bitmap, exposureEv: Float): Bitmap {
-        val out = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(out)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            colorFilter = ExposureColorMatrix.createAndroidColorFilter(exposureEv)
+        // Deterministic pixel implementation: avoids Canvas ColorFilter differences across
+        // Android/Robolectric and guarantees consistent exposure results.
+        val scale = ExposureColorMatrix.exposureScaleFactor(exposureEv)
+        val pixels = IntArray(source.width * source.height)
+        source.getPixels(pixels, 0, source.width, 0, 0, source.width, source.height)
+        for (i in pixels.indices) {
+            val pixel = pixels[i]
+            val alpha = (pixel ushr 24) and 0xFF
+            val red = (((pixel ushr 16) and 0xFF) * scale).roundToInt().coerceIn(0, 255)
+            val green = (((pixel ushr 8) and 0xFF) * scale).roundToInt().coerceIn(0, 255)
+            val blue = ((pixel and 0xFF) * scale).roundToInt().coerceIn(0, 255)
+            pixels[i] = (alpha shl 24) or (red shl 16) or (green shl 8) or blue
         }
-        canvas.drawBitmap(source, 0f, 0f, paint)
+        val out = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
+        out.setPixels(pixels, 0, source.width, 0, 0, source.width, source.height)
         return out
     }
 
