@@ -178,6 +178,22 @@
 
 ## Phase 5 — AI Editing & Privacy
 
+### On-device Real-ESRGAN (selected model set)
+
+- [x] Define initial model catalog and selected model metadata (Photo x4plus, Anime x4, AnimeVideo v3 x2)
+- [ ] Verify/download model files with integrity checks and resume support
+- [ ] Add model storage manager and installed/downloaded state
+- [ ] Integrate NCNN Android Vulkan native library (JNI/CMake)
+- [ ] Implement tile-based inference and memory-safe processing
+- [ ] Add CPU fallback and Vulkan capability checks
+- [ ] Wire model picker and download controls into AI Studio
+- [ ] Connect inference output to non-destructive editor state
+- [ ] Add progress, cancellation, error handling and preview/compare
+- [ ] Verify upstream model file sources and licenses before distributing
+- [ ] Build and test on Vulkan-capable and CPU-fallback Android devices
+
+**Selected models:** Real-ESRGAN x4plus Photo (~33.4 MB), Real-ESRGAN Anime x4 (~8.9 MB), AnimeVideo v3 x2 (~1.2 MB). Approximate weights total: 43.5 MB. The catalog is metadata only; inference/download functionality is not implemented yet.
+
 ### AI Photo Enhance
 
 - [x] Add AI Enhance mode to AI Studio
