@@ -70,8 +70,8 @@ fun PhotoStudioScreen(
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
-    val luminaApp = remember(context) { context.applicationContext as? PhotoStudioApplication }
-    val billingStateFlow = luminaApp?.premiumBillingManager?.state
+    val photoStudioApp = remember(context) { context.applicationContext as? PhotoStudioApplication }
+    val billingStateFlow = photoStudioApp?.premiumBillingManager?.state
     val billingState by if (billingStateFlow != null) {
         billingStateFlow.collectAsStateWithLifecycle()
     } else {
@@ -87,13 +87,13 @@ fun PhotoStudioScreen(
 
     LaunchedEffect(uiState.exportUiState, billingState.isPremiumAdFree) {
         if (!billingState.isPremiumAdFree && uiState.exportUiState is ExportUiState.Success && activity != null) {
-            luminaApp?.showInterstitialIfAvailable(activity)
+            photoStudioApp?.showInterstitialIfAvailable(activity)
         }
     }
 
     LaunchedEffect(uiState.aiOperationState, billingState.isPremiumAdFree) {
         if (!billingState.isPremiumAdFree && uiState.aiOperationState is AiOperationUiState.Success && activity != null) {
-            luminaApp?.showInterstitialIfAvailable(activity)
+            photoStudioApp?.showInterstitialIfAvailable(activity)
         }
     }
 
@@ -155,7 +155,7 @@ fun PhotoStudioScreen(
             onToggleHistogram = viewModel::toggleHistogram,
             onResetAll = viewModel::resetAllEdits,
             onRemoveAdsClick = {
-                luminaApp?.premiumBillingManager?.clearMessages()
+                photoStudioApp?.premiumBillingManager?.clearMessages()
                 showRemoveAdsSheet = true
             },
             onExportClick = {
@@ -278,7 +278,7 @@ fun PhotoStudioScreen(
             exportUiState = uiState.exportUiState,
             onExport = viewModel::exportHighRes,
             onRemoveAdsClick = {
-                luminaApp?.premiumBillingManager?.clearMessages()
+                photoStudioApp?.premiumBillingManager?.clearMessages()
                 showRemoveAdsSheet = true
             },
             onDismiss = { showExportSheet = false }
@@ -290,11 +290,11 @@ fun PhotoStudioScreen(
             billingState = billingState,
             onPurchaseClick = {
                 if (activity != null) {
-                    luminaApp?.premiumBillingManager?.launchRemoveAdsPurchase(activity)
+                    photoStudioApp?.premiumBillingManager?.launchRemoveAdsPurchase(activity)
                 }
             },
             onRestoreClick = {
-                luminaApp?.premiumBillingManager?.restorePurchases()
+                photoStudioApp?.premiumBillingManager?.restorePurchases()
             },
             onDismiss = { showRemoveAdsSheet = false }
         )
