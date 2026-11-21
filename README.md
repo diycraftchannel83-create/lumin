@@ -414,7 +414,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
-| 2026-11-21 | Phase 0 — branding continuation | Renamed application class and typography symbol to PhotoStudio; branded empty-editor workspace; renamed app reference variable; updated premium/export dialogs to PhotoStudio Pro; preserved legacy billing SKU to avoid product-ID breakage | Build/unit tests not run; source/resource inspection only | See latest commit |
+| 2026-11-21 | Phase 0 — branding continuation | Renamed application class and typography symbol to PhotoStudio; branded empty-editor workspace; renamed app reference variable; updated premium/export dialogs to PhotoStudio Pro; changed export filenames from LuminaLab to PhotoStudio; preserved legacy billing SKU to avoid product-ID breakage | Build/unit tests not run; source/resource inspection only | See latest commit |
 
 ## Current Known Release Risks (Initial Audit)
 
