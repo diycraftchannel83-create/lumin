@@ -479,6 +479,10 @@ fun AiStudioPanel(
     onRevertAi: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sharpen = remember { mutableFloatStateOf(0.65f) }
+    val denoise = remember { mutableFloatStateOf(0.25f) }
+    val detailContrast = remember { mutableFloatStateOf(0.35f) }
+
     Column(
         modifier = modifier
             .fillMaxWidth()
