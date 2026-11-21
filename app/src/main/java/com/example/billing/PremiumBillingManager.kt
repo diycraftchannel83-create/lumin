@@ -29,7 +29,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 private const val TAG = "PremiumBillingManager"
-// Keep the legacy preference namespace to preserve previously stored premium entitlement.\nprivate const val PREFS_NAME = "lumina_premium_billing_prefs"
+// Keep the legacy preference namespace to preserve previously stored premium entitlement.
+private const val PREFS_NAME = "lumina_premium_billing_prefs"
 private const val KEY_IS_PREMIUM_AD_FREE = "is_premium_ad_free"
 
 data class PremiumBillingState(
