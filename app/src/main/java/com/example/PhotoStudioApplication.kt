@@ -60,7 +60,7 @@ class PhotoStudioApplication :
         if (!premiumBillingManager.isPremiumAdFree) {
             appScope.launch {
                 try {
-                    MobileAds.initialize(this@LuminaApplication) {
+                    MobileAds.initialize(this@PhotoStudioApplication) {
                         CoroutineScope(Dispatchers.Main).launch {
                             if (!premiumBillingManager.isPremiumAdFree) {
                                 appOpenAdManager.loadAd()
