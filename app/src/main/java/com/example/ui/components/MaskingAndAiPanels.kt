@@ -37,6 +37,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import com.example.ai.RealEsrganModelCatalog
+import com.example.ai.RealEsrganModelManager
+import kotlinx.coroutines.launch
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -384,6 +393,83 @@ fun MaskingPanel(
 }
 
 @Composable
+private fun RealEsrganModelManagerPanel(onRunModel: (String) -> Unit) {
+    val context = LocalContext.current
+    val manager = remember(context) { RealEsrganModelManager(context) }
+    val scope = rememberCoroutineScope()
+    var installedIds by remember { mutableStateOf(manager.installedModels().map { it.id }.toSet()) }
+    var selectedId by remember { mutableStateOf(RealEsrganModelCatalog.models.first().id) }
+    var progress by remember { mutableStateOf<Float?>(null) }
+    var progressFile by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+    val selected = RealEsrganModelCatalog.find(selectedId) ?: RealEsrganModelCatalog.models.first()
+    Column(
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp))
+            .background(StudioElevated).border(1.dp, StudioHairline, RoundedCornerShape(12.dp)).padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text("ON-DEVICE REAL-ESRGAN MODELS", color = CyanPrecision, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text("Download model weights once. After installation, AI upscaling works offline.", color = TextSecondary, style = MaterialTheme.typography.bodySmall)
+        RealEsrganModelCatalog.models.forEach { model ->
+            val selectedRow = model.id == selectedId
+            Row(
+                modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                    .background(if (selectedRow) CyanPrecision.copy(alpha = 0.10f) else StudioPanel)
+                    .border(1.dp, if (selectedRow) CyanPrecision else StudioHairline, RoundedCornerShape(8.dp))
+                    .clickable { selectedId = model.id }.padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(model.displayName, color = TextPrimary, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.SemiBold)
+                    Text("${model.scale}× • ~${model.approximateDownloadMb} MB • ${model.description}", color = TextMuted, style = MaterialTheme.typography.bodySmall)
+                }
+                Text(if (model.id in installedIds) "INSTALLED" else if (selectedRow) "SELECTED" else "", color = if (model.id in installedIds) EmeraldSuccess else CyanPrecision, style = MaterialTheme.typography.labelSmall)
+            }
+        }
+        if (progress != null) {
+            Text("Downloading $progressFile • ${progress!!.toInt()}%", color = TextSecondary, style = MaterialTheme.typography.labelSmall)
+            LinearProgressIndicator(progress = progress!! / 100f, modifier = Modifier.fillMaxWidth(), color = CyanPrecision)
+        }
+        if (status.isNotBlank()) Text(status, color = EmeraldSuccess, style = MaterialTheme.typography.bodySmall)
+        error?.let { Text(it, color = RoseMask, style = MaterialTheme.typography.bodySmall) }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = {
+                    error = null; status = ""; progress = 0f
+                    scope.launch {
+                        try {
+                            manager.install(selected) { file, percent ->
+                                progressFile = file
+                                progress = percent.toFloat()
+                            }
+                            installedIds = manager.installedModels().map { it.id }.toSet()
+                            status = "Model downloaded and installed."
+                        } catch (e: Exception) {
+                            error = e.message ?: "Model download failed."
+                        } finally { progress = null }
+                    }
+                },
+                enabled = progress == null && selected.id !in installedIds,
+                colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid),
+                modifier = Modifier.weight(1f)
+            ) { Text(if (selected.id in installedIds) "Installed" else "Download Model") }
+            OutlinedButton(
+                onClick = { manager.remove(selected); installedIds = manager.installedModels().map { it.id }.toSet(); status = "Model removed."; error = null },
+                enabled = progress == null && selected.id in installedIds,
+                modifier = Modifier.weight(1f)
+            ) { Text("Remove") }
+        }
+        Button(
+            onClick = { onRunModel(selected.id) },
+            enabled = progress == null && selected.id in installedIds,
+            colors = ButtonDefaults.buttonColors(containerColor = EmeraldSuccess, contentColor = ObsidianVoid),
+            modifier = Modifier.fillMaxWidth().testTag("run_realesrgan_button")
+        ) { Text("Run Real-ESRGAN AI Upscale") }
+    }
+}
+
+@Composable
 fun AiStudioPanel(
     aiState: AiStudioState,
     aiOperationState: AiOperationUiState,
@@ -395,6 +481,7 @@ fun AiStudioPanel(
     onRunBackgroundRemoval: () -> Unit,
     onRunAiEnhance: () -> Unit,
     onRunLocalEnhance: (Float, Float, Float) -> Unit,
+    onRunRealEsrgan: (String) -> Unit,
     onUpscale2xLocal: () -> Unit,
     onSelectBackgroundStyle: (BackgroundReplacement) -> Unit,
     onRevertAi: () -> Unit,
@@ -586,7 +673,7 @@ fun AiStudioPanel(
             }
 
             AiToolMode.ENHANCE -> {
-                RealEsrganModelManagerPanel()
+                RealEsrganModelManagerPanel(onRunRealEsrgan)
 
                 Text(
                     text = "AI Enhance cleans up blurry or noisy photos, improves edge sharpness and restores natural-looking detail. Results depend on the source image; AI may reconstruct details.",
