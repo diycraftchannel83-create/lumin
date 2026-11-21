@@ -382,6 +382,8 @@ fun AiStudioPanel(
     onRunObjectRemoval: () -> Unit,
     onRunBackgroundRemoval: () -> Unit,
     onRunAiEnhance: () -> Unit,
+    onRunLocalEnhance: () -> Unit,
+    onUpscale2xLocal: () -> Unit,
     onSelectBackgroundStyle: (BackgroundReplacement) -> Unit,
     onRevertAi: () -> Unit,
     modifier: Modifier = Modifier
@@ -577,6 +579,10 @@ fun AiStudioPanel(
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Button(onClick = onRunLocalEnhance, enabled = aiOperationState !is AiOperationUiState.Loading, colors = ButtonDefaults.buttonColors(containerColor = CyanPrecision, contentColor = ObsidianVoid), shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(1f).testTag("run_local_enhance_button")) { Text("Local Enhance") }
+                    OutlinedButton(onClick = onUpscale2xLocal, enabled = aiOperationState !is AiOperationUiState.Loading, shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(1f).testTag("local_upscale_2x_button")) { Text("Upscale 2×") }
+                }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     if (canRevertAiBase) {
                         OutlinedButton(onClick = onRevertAi, shape = RoundedCornerShape(10.dp), modifier = Modifier.weight(0.8f)) {
