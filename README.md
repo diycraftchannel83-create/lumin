@@ -180,19 +180,21 @@
 
 ### On-device Real-ESRGAN (selected model set)
 
-- [x] Define initial model catalog and selected model metadata (Photo x4plus, Anime x4, AnimeVideo v3 x2)
-- [ ] Verify/download model files with integrity checks and resume support
-- [ ] Add model storage manager and installed/downloaded state
-- [ ] Integrate NCNN Android Vulkan native library (JNI/CMake)
-- [ ] Implement tile-based inference and memory-safe processing
-- [ ] Add CPU fallback and Vulkan capability checks
-- [ ] Wire model picker and download controls into AI Studio
-- [ ] Connect inference output to non-destructive editor state
-- [ ] Add progress, cancellation, error handling and preview/compare
-- [ ] Verify upstream model file sources and licenses before distributing
-- [ ] Build and test on Vulkan-capable and CPU-fallback Android devices
+- [x] Initial model catalog for Photo x4plus, Anime x4, and AnimeVideo v3 x2
+- [x] Runtime model downloader into app-private storage with temporary-file finalization and basic size checks
+- [x] Model install/remove UI in AI Studio
+- [x] JNI bridge and tiled NCNN inference source with Vulkan capability check
+- [x] Real-ESRGAN inference action wired into the editor state and preview refresh
+- [x] Input/output memory guardrails (12 MP input / 24 MP output limits)
+- [ ] Verify model download sources and hashes in automated integration tests
+- [ ] Build native library and Debug APK successfully in CI
+- [ ] Verify inference on Vulkan device and CPU-only fallback
+- [ ] Add robust CPU retry if Vulkan inference fails on a device driver
+- [ ] Progress/cancel for native inference
+- [ ] Before/after compare, save/export and large-image device QA
 
-**Selected models:** Real-ESRGAN x4plus Photo (~33.4 MB), Real-ESRGAN Anime x4 (~8.9 MB), AnimeVideo v3 x2 (~1.2 MB). Approximate weights total: 43.5 MB. The catalog is metadata only; inference/download functionality is not implemented yet.
+**Selected models:** Photo x4plus (~33.4 MB), Anime x4plus (~8.9 MB), AnimeVideo v3 x2 (~1.2 MB). Model files are downloaded on demand and stored app-private; they are not bundled into the APK. The catalog/downloader and JNI/native source are implemented, but native build and device execution are not yet verified. Model source links are Hugging Face mirrors of NCNN-format weights; confirm license attribution and integrity hashes before production distribution.
+
 
 ### AI Photo Enhance
 
