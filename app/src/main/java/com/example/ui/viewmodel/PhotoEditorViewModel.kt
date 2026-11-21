@@ -816,12 +816,12 @@ class PhotoEditorViewModel(
         }
     }
 
-    fun runLocalEnhance() {
+    fun runLocalEnhance(sharpen: Float = 0.65f, denoise: Float = 0.25f, localContrast: Float = 0.35f) {
         val base = workingBaseFullRes ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(aiOperationState = AiOperationUiState.Loading("Enhancing locally — no upload or billing…")) }
             try {
-                val result = withContext(Dispatchers.Default) { LocalEnhancementEngine.enhance(base, 0.65f, 0.25f, 0.35f) }
+                val result = withContext(Dispatchers.Default) { LocalEnhancementEngine.enhance(base, sharpen, denoise, localContrast) }
                 workingBaseFullRes = result
                 workingBasePreview = ImageProcessor.downsampleIfNeeded(result, 1024)
                 _uiState.update { it.copy(aiState = it.aiState.copy(hasEnhancementApplied = true, noticeBanner = "Local enhancement applied"), aiOperationState = AiOperationUiState.Success("Offline enhancement complete. No internet/API/billing used."), canRevertAiBase = true) }
