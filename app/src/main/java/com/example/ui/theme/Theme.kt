@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp
 
-private val LuminaDarkColorScheme = darkColorScheme(
+private val PhotoStudioDarkColorScheme = darkColorScheme(
     primary = CyanPrecision,
     onPrimary = ObsidianVoid,
     primaryContainer = CyanMuted,
@@ -33,7 +33,7 @@ private val LuminaDarkColorScheme = darkColorScheme(
     onError = ObsidianVoid
 )
 
-val LuminaShapes = Shapes(
+val PhotoStudioShapes = Shapes(
     extraSmall = RoundedCornerShape(6.dp),
     small = RoundedCornerShape(10.dp),
     medium = RoundedCornerShape(14.dp),
@@ -42,13 +42,13 @@ val LuminaShapes = Shapes(
 )
 
 @Composable
-fun LuminaLabTheme(
+fun PhotoStudioTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = LuminaDarkColorScheme,
+        colorScheme = PhotoStudioDarkColorScheme,
         typography = LuminaTypography,
-        shapes = LuminaShapes,
+        shapes = PhotoStudioShapes,
         content = content
     )
 }
