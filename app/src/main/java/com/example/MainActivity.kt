@@ -70,7 +70,7 @@ fun PhotoStudioScreen(
 ) {
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
-    val luminaApp = remember(context) { context.applicationContext as? LuminaApplication }
+    val luminaApp = remember(context) { context.applicationContext as? PhotoStudioApplication }
     val billingStateFlow = luminaApp?.premiumBillingManager?.state
     val billingState by if (billingStateFlow != null) {
         billingStateFlow.collectAsStateWithLifecycle()
