@@ -16,6 +16,7 @@ import com.example.ai.AiImageRepository
 import com.example.ai.FirebaseAiImageRepository
 import com.example.engine.ExportResult
 import com.example.engine.ImageProcessor
+import com.example.engine.LocalEnhancementEngine
 import com.example.engine.TiffAndExportWriter
 import com.example.model.AdjustSubTab
 import com.example.model.AiStudioState
@@ -811,6 +812,36 @@ class PhotoEditorViewModel(
                 _uiState.update {
                     it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "AI object removal failed."))
                 }
+            }
+        }
+    }
+
+    fun runLocalEnhance() {
+        val base = workingBaseFullRes ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(aiOperationState = AiOperationUiState.Loading("Enhancing locally — no upload or billing…")) }
+            try {
+                val result = withContext(Dispatchers.Default) { LocalEnhancementEngine.enhance(base, 0.65f, 0.25f, 0.35f) }
+                workingBaseFullRes = result
+                workingBasePreview = ImageProcessor.downsampleIfNeeded(result, 1024)
+                _uiState.update { it.copy(aiState = it.aiState.copy(hasEnhancementApplied = true, noticeBanner = "Local enhancement applied"), aiOperationState = AiOperationUiState.Success("Offline enhancement complete. No internet/API/billing used."), canRevertAiBase = true) }
+                refreshFilterThumbnails(); schedulePreviewRender(immediate = true)
+            } catch (e: CancellationException) { throw e } catch (e: Exception) {
+                Log.e(TAG, "Local enhance failed", e); _uiState.update { it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "Local enhancement failed")) }
+            }
+        }
+    }
+    fun upscaleImage2xLocal() {
+        val base = workingBaseFullRes ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(aiOperationState = AiOperationUiState.Loading("Upscaling 2× locally…")) }
+            try {
+                val result = withContext(Dispatchers.Default) { LocalEnhancementEngine.upscale2x(base) }
+                workingBaseFullRes = result; workingBasePreview = ImageProcessor.downsampleIfNeeded(result, 1024)
+                _uiState.update { it.copy(aiState = it.aiState.copy(hasEnhancementApplied = true, noticeBanner = "Local 2× upscale applied"), aiOperationState = AiOperationUiState.Success("2× upscale completed using interpolation."), canRevertAiBase = true) }
+                refreshFilterThumbnails(); schedulePreviewRender(immediate = true)
+            } catch (e: CancellationException) { throw e } catch (e: Exception) {
+                Log.e(TAG, "Local upscale failed", e); _uiState.update { it.copy(aiOperationState = AiOperationUiState.Error(e.localizedMessage ?: "Upscale failed")) }
             }
         }
     }
