@@ -414,6 +414,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
+| 2026-11-21 | Phase 0 — release configuration audit | Updated BillingManager default/status messages to PhotoStudio Pro; added shared tagline and empty-workspace prompt strings; preserved legacy entitlement preferences, Billing SKU, and applicationId pending Play Store identity decision. Audit confirms AdMob App ID is Google test ID and applicationId remains legacy AI Studio ID — both require owner decision before release. | Build/tests not run; source-only inspection | See latest commit |
 | 2026-11-21 | Phase 0 — branding continuation | Renamed application class and typography symbol to PhotoStudio; branded empty-editor workspace; renamed app reference variable; updated premium/export dialogs to PhotoStudio Pro; changed export filenames from LuminaLab to PhotoStudio; preserved legacy billing SKU to avoid product-ID breakage | Build/unit tests not run; source/resource inspection only | See latest commit |
 
 ## Current Known Release Risks (Initial Audit)
