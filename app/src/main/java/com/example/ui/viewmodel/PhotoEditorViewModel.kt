@@ -115,6 +115,7 @@ class PhotoEditorViewModel(
     private var isInContinuousGesture = false
 
     private var renderJob: Job? = null
+    private var previewRenderGeneration = 0L
     private var thumbsJob: Job? = null
 
     // Start in the branded empty workspace. Sample images remain available from the sample picker.
@@ -914,6 +915,7 @@ class PhotoEditorViewModel(
     private fun schedulePreviewRender(immediate: Boolean) {
         val basePrev = workingBasePreview ?: return
         val origFull = originalLoadedBitmap ?: basePrev
+        val generation = ++previewRenderGeneration
         renderJob?.cancel()
         renderJob = viewModelScope.launch(Dispatchers.Default) {
             if (!immediate) {
@@ -952,13 +954,17 @@ class PhotoEditorViewModel(
 
             val hist = ImageProcessor.computeHistogram(processed, snap.adjustments.exposure)
 
-            _uiState.update {
-                it.copy(
-                    processedPreview = processed,
-                    originalPreview = origMatched,
-                    histogram = hist,
-                    isRenderingPreview = false
-                )
+            // Cancellation alone may not stop synchronous bitmap processing. Guard against an
+            // older render finishing after a newer edit and overwriting its preview state.
+            if (generation == previewRenderGeneration) {
+                _uiState.update {
+                    it.copy(
+                        processedPreview = processed,
+                        originalPreview = origMatched,
+                        histogram = hist,
+                        isRenderingPreview = false
+                    )
+                }
             }
         }
     }
