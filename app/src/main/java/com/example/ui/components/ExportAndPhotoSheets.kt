@@ -379,7 +379,7 @@ fun ExportModalSheet(
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
-                            text = "Go Ad-Free with Lumina Pro",
+                            text = "Go Ad-Free with PhotoStudio Pro",
                             style = MaterialTheme.typography.labelLarge,
                             color = TextPrimary
                         )
