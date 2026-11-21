@@ -44,7 +44,7 @@
 - [x] Add PhotoStudio splash branding from supplied PhotoStudioIcon.png
 - [x] Define initial color tokens and theme palette (typography/spacing refinement remains)
 - [x] Rename legacy application and typography code symbols to PhotoStudio; legacy billing SKU intentionally retained for product compatibility
-- [ ] Remove old Lumin branding and placeholder labels
+- [x] Remove remaining user-visible Lumin branding from premium/export messaging (legacy SKU kept intentionally; broader strings audit remains)
 - [ ] Update export metadata, default filenames and share text where applicable
 - [ ] Decide final package/application ID before Play Store release (changing it later creates a separate app identity)
 
@@ -414,7 +414,7 @@ A task can be marked complete only when:
 
 | Date | Milestone | Changes | Verification | Commit |
 |---|---|---|---|---|
-| 2026-11-21 | Phase 0 — branding continuation | Renamed application class and typography symbol to PhotoStudio; added branded empty-editor workspace; preserved legacy billing SKU to avoid product-ID breakage | Build/unit tests not run; source/resource inspection only | See latest commit |
+| 2026-11-21 | Phase 0 — branding continuation | Renamed application class and typography symbol to PhotoStudio; branded empty-editor workspace; renamed app reference variable; updated premium/export dialogs to PhotoStudio Pro; preserved legacy billing SKU to avoid product-ID breakage | Build/unit tests not run; source/resource inspection only | See latest commit |
 
 ## Current Known Release Risks (Initial Audit)
 
