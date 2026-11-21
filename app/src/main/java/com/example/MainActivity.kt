@@ -38,7 +38,7 @@ import com.example.ui.components.ExportModalSheet
 import com.example.ui.components.PhotoSourceModalSheet
 import com.example.ui.components.RemoveAdsModalSheet
 import com.example.ui.components.StudioTopBar
-import com.example.ui.theme.LuminaLabTheme
+import com.example.ui.theme.PhotoStudioTheme
 import com.example.ui.theme.ObsidianVoid
 import com.example.ui.viewmodel.AiOperationUiState
 import com.example.ui.viewmodel.ExportUiState
@@ -57,15 +57,15 @@ class MainActivity : ComponentActivity() {
         )
 
         setContent {
-            LuminaLabTheme {
-                LuminaStudioScreen()
+            PhotoStudioTheme {
+                PhotoStudioScreen()
             }
         }
     }
 }
 
 @Composable
-fun LuminaStudioScreen(
+fun PhotoStudioScreen(
     viewModel: PhotoEditorViewModel = viewModel()
 ) {
     val context = LocalContext.current
