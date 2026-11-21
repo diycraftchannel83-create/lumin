@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="studio_black">#101114</color>
+    <color name="studio_surface">#1B1B20</color>
+    <color name="studio_lime">#C6F36B</color>
+    <color name="studio_warm_white">#F4F3EF</color>
+    <color name="studio_muted_gray">#909098</color>
+    <color name="studio_premium_gold">#D8B56D</color>
+
+    <!-- Legacy compatibility colors retained until the UI migration is complete. -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
